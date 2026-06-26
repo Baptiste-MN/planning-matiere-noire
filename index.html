@@ -1467,17 +1467,9 @@ async function exportPDF(){
 // ═══════════════════════════════════════════════════════════════════
 // LOCALSTORAGE
 // ═══════════════════════════════════════════════════════════════════
-const LS_KEY='mn-planning-v2';
-function saveData(){
-  try{localStorage.setItem(LS_KEY,JSON.stringify({PROJECTS,PEOPLE,EVENTS,PIPELINE,FRI_OFF:Array.from(FRI_OFF)}));}
   catch(e){console.warn('Save failed',e);}
 }
-function loadData(){// Désactivé — données dans le HTML
-  return false;
-}
-function loadData_DISABLED(){
   try{
-    const raw=localStorage.getItem(LS_KEY);if(!raw)return false;
     const d=JSON.parse(raw);
     if(d.PROJECTS)PROJECTS.length=0,PROJECTS.push(...d.PROJECTS);
     if(d.PEOPLE)PEOPLE.length=0,PEOPLE.push(...d.PEOPLE);
@@ -1487,9 +1479,136 @@ function loadData_DISABLED(){
     return true;
   }catch(e){return false;}
 }
+  if(!confirm('⚠️ Remettre aux données d\'origine ?'))return;
+}
+
+// Met à jour l'indicateur de mois visible en fonction du scroll
+function updateMonthIndicator(){
+  const rp=document.getElementById('plan-right');
+  if(!rp)return;
+  const scrollX=rp.scrollLeft;
+  const dayIdx=Math.floor(scrollX/COL);
+  const d=dayAt(Math.max(0,Math.min(dayIdx,getTOTAL()-1)));
+  const lbl=document.getElementById('month-indicator');
+  if(lbl)lbl.textContent=MFR[d.getMonth()]+' '+d.getFullYear();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+
+// ═══════════════════════════════════════════════════════════════════
+// FIREBASE — SYNC TEMPS RÉEL
+// ═══════════════════════════════════════════════════════════════════
+const FB_CONFIG={
+  apiKey:"AIzaSyByf4SmnGJvfkkJVFhfINXikb8I8ge5VRU",
+  authDomain:"matiere-noire-todo.firebaseapp.com",
+  databaseURL:"https://matiere-noire-todo-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"matiere-noire-todo",
+  storageBucket:"matiere-noire-todo.firebasestorage.app",
+  messagingSenderId:"583651643354",
+  appId:"1:583651643354:web:74b78c43316b9d657dfae3"
+};
+
+// Indicateur sync
+function flashSync(){
+  let bar=document.getElementById('fb-sync-bar');
+  if(!bar){bar=document.createElement('div');bar.id='fb-sync-bar';bar.style.cssText='position:fixed;top:0;left:0;right:0;height:3px;background:transparent;z-index:9999;transition:background .3s;';document.body.appendChild(bar);}
+  bar.style.background='#2DC653';
+  clearTimeout(flashSync._t);
+  flashSync._t=setTimeout(()=>bar.style.background='transparent',800);
+}
+
+let FB_DB=null;
+let FB_SKIP=false;
+let FB_SAVE_T=null;
+let FB_LOADED=false;
+
+function fbInit(){
+  if(typeof firebase==='undefined'){console.warn('Firebase not loaded');fbFallback();return;}
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    FB_DB=firebase.database().ref('planning');
+
+    // Connexion indicator
+    firebase.database().ref('.info/connected').on('value',snap=>{
+      let dot=document.getElementById('fb-dot');
+      if(!dot){
+        dot=document.createElement('div');dot.id='fb-dot';
+        dot.style.cssText='position:fixed;top:8px;right:16px;width:8px;height:8px;border-radius:50%;z-index:9999;transition:background .3s;';
+        document.body.appendChild(dot);
+      }
+      dot.style.background=snap.val()?'#2DC653':'#E63946';
+      dot.title=snap.val()?'Connecté Firebase':'Hors ligne';
+    });
+
+    // Load initial data once
+    FB_DB.once('value',snap=>{
+      const d=snap.val();
+      if(d){
+        if(d.PROJECTS)PROJECTS.length=0,PROJECTS.push(...d.PROJECTS);
+        if(d.PEOPLE)PEOPLE.length=0,PEOPLE.push(...d.PEOPLE);
+        if(d.EVENTS)EVENTS.length=0,EVENTS.push(...d.EVENTS);
+        if(d.PIPELINE)PIPELINE.length=0,PIPELINE.push(...d.PIPELINE);
+        if(d.FRI_OFF){FRI_OFF.clear();d.FRI_OFF.forEach(id=>FRI_OFF.add(id));}
+      } else {
+        // First time — push default data
+        fbSave();
+      }
+      FB_LOADED=true;
+      buildFilterBtns();
+      render();
+      renderPipeline();
+
+      // Now listen for remote changes
+      FB_DB.on('value',snap2=>{
+        if(FB_SKIP)return;
+        const d2=snap2.val();if(!d2)return;
+        if(d2.PROJECTS)PROJECTS.length=0,PROJECTS.push(...d2.PROJECTS);
+        if(d2.PEOPLE)PEOPLE.length=0,PEOPLE.push(...d2.PEOPLE);
+        if(d2.EVENTS)EVENTS.length=0,EVENTS.push(...d2.EVENTS);
+        if(d2.PIPELINE)PIPELINE.length=0,PIPELINE.push(...d2.PIPELINE);
+        if(d2.FRI_OFF){FRI_OFF.clear();d2.FRI_OFF.forEach(id=>FRI_OFF.add(id));}
+        buildFilterBtns();render();renderPipeline();
+      });
+    });
+  }catch(e){console.warn('Firebase error',e);fbFallback();}
+}
+
+function fbSave(){
+  clearTimeout(FB_SAVE_T);
+  render();updateChargePanelIfOpen();
+  FB_SAVE_T=setTimeout(()=>{
+    if(!FB_DB){saveDataLocal();return;}
+    flashSync();
+    FB_SKIP=true;
+    FB_DB.set({PROJECTS,PEOPLE,EVENTS,PIPELINE,FRI_OFF:Array.from(FRI_OFF)})
+      .then(()=>setTimeout(()=>FB_SKIP=false,1000))
+      .catch(e=>{console.warn('FB save failed',e);saveDataLocal();});
+  },500);
+}
+
+function updateChargePanelIfOpen(){
+  const panel=document.getElementById('charge-panel');
+  if(panel&&panel.classList.contains('open'))renderCharge();
+}
+
+// Fallback localStorage si Firebase indisponible
+function fbFallback(){
+  const raw=localStorage.getItem('mn-planning-v2');
+  if(raw){try{const d=JSON.parse(raw);if(d.PROJECTS)PROJECTS.length=0,PROJECTS.push(...d.PROJECTS);if(d.PEOPLE)PEOPLE.length=0,PEOPLE.push(...d.PEOPLE);if(d.EVENTS)EVENTS.length=0,EVENTS.push(...d.EVENTS);if(d.PIPELINE)PIPELINE.length=0,PIPELINE.push(...d.PIPELINE);if(d.FRI_OFF){FRI_OFF.clear();d.FRI_OFF.forEach(id=>FRI_OFF.add(id));}}catch(e){}}
+  buildFilterBtns();render();renderPipeline();
+}
+
+function saveDataLocal(){
+  try{localStorage.setItem('mn-planning-v2',JSON.stringify({PROJECTS,PEOPLE,EVENTS,PIPELINE,FRI_OFF:Array.from(FRI_OFF)}));}catch(e){}
+}
+
+function saveData(){fbSave();}
 function resetData(){
   if(!confirm('⚠️ Remettre aux données d\'origine ?'))return;
-  localStorage.removeItem(LS_KEY);location.reload();
+  localStorage.removeItem('mn-planning-v2');
+  if(FB_DB)FB_DB.remove().then(()=>location.reload());
+  else location.reload();
 }
 
 // Met à jour l'indicateur de mois visible en fonction du scroll
@@ -1511,10 +1630,20 @@ document.getElementById('cur-date').textContent=
 document.getElementById('df-start').value=fmtDate(getDefaultStart());
 document.getElementById('df-end').value=fmtDate(END_DEFAULT);
 
-loadData();
-buildFilterBtns();
-render();
-renderPipeline();
+// Load Firebase SDKs then init
+(function loadFirebase(){
+  const s1=document.createElement('script');
+  s1.src='https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
+  s1.onload=()=>{
+    const s2=document.createElement('script');
+    s2.src='https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js';
+    s2.onload=fbInit;
+    s2.onerror=fbFallback;
+    document.head.appendChild(s2);
+  };
+  s1.onerror=fbFallback;
+  document.head.appendChild(s1);
+})();
 
 // Scroll listener pour indicateur de mois
 const rp=document.getElementById('plan-right');
