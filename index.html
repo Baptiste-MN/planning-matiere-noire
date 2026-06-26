@@ -385,6 +385,33 @@ function isHoliday(d){return HOLIDAYS.has(fmtDate(d));}
 
 const FRI_OFF=new Set(['lucien']);
 
+function gcClass(d,personId){
+  if(isHoliday(d))return'ferie';
+  if(isWE(d))return'we';
+  if(personId&&FRI_OFF.has(personId)&&isFri(d))return'luci';
+  return'';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MILESTONE STYLES
+// ═══════════════════════════════════════════════════════════════════
+const MS_STYLE={
+  INT:    {bg:'#F4A261',c:'#0B0B0B'},
+  ESQ:    {bg:'#F9C22E',c:'#0B0B0B'},
+  DEV:    {bg:'#6BCB77',c:'#0B0B0B'},
+  PRT:    {bg:'#A8DADC',c:'#0B0B0B'},
+  PRG:    {bg:'#C77DFF',c:'#0B0B0B'},
+  DDAY:   {bg:'#E63946',c:'#fff'},
+  FINAL:  {bg:'transparent',c:'#555',border:'1.5px solid #999'},
+  FOLLOWUP:{bg:'rgba(45,198,83,.15)',c:'#1a8a3a',border:'1px solid #2DC653'},
+  TBC:    {bg:'rgba(100,180,210,.15)',c:'#2a7a9a',border:'1px dashed #6ab4d2'},
+  SV:     {bg:'#E8F4F8',c:'#1565C0',border:'1px solid #90CAF9'},
+  MTG:    {bg:'#FFF3E0',c:'#E65100',border:'1px solid #FFB74D'},
+  OFF:    {bg:'#1A1A1A',c:'#fff'},
+};
+const PERSONAL_TYPES=new Set(['FOLLOWUP','TBC','SV','MTG','OFF']);
+const OWNERS={pierre:'#4895EF',felix:'#F72585',lucien:'#F9C22E'};
+
 // ═══════════════════════════════════════════════════════════════════
 // DATA MODEL v2
 // ═══════════════════════════════════════════════════════════════════
@@ -1445,9 +1472,20 @@ function saveData(){
   try{localStorage.setItem(LS_KEY,JSON.stringify({PROJECTS,PEOPLE,EVENTS,PIPELINE,FRI_OFF:Array.from(FRI_OFF)}));}
   catch(e){console.warn('Save failed',e);}
 }
-function loadData(){
-  // Données chargées depuis le fichier HTML uniquement — pas de localStorage
+function loadData(){// Désactivé — données dans le HTML
   return false;
+}
+function loadData_DISABLED(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);if(!raw)return false;
+    const d=JSON.parse(raw);
+    if(d.PROJECTS)PROJECTS.length=0,PROJECTS.push(...d.PROJECTS);
+    if(d.PEOPLE)PEOPLE.length=0,PEOPLE.push(...d.PEOPLE);
+    if(d.EVENTS)EVENTS.length=0,EVENTS.push(...d.EVENTS);
+    if(d.PIPELINE)PIPELINE.length=0,PIPELINE.push(...d.PIPELINE);
+    if(d.FRI_OFF){FRI_OFF.clear();d.FRI_OFF.forEach(id=>FRI_OFF.add(id));}
+    return true;
+  }catch(e){return false;}
 }
 function resetData(){
   if(!confirm('⚠️ Remettre aux données d\'origine ?'))return;
