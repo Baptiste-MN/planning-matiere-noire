@@ -385,114 +385,66 @@ function isHoliday(d){return HOLIDAYS.has(fmtDate(d));}
 
 const FRI_OFF=new Set(['lucien']);
 
-function gcClass(d,personId){
-  if(isHoliday(d))return'ferie';
-  if(isWE(d))return'we';
-  if(personId&&FRI_OFF.has(personId)&&isFri(d))return'luci';
-  return'';
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// MILESTONE STYLES
-// ═══════════════════════════════════════════════════════════════════
-const MS_STYLE={
-  INT:    {bg:'#F4A261',c:'#0B0B0B'},
-  ESQ:    {bg:'#F9C22E',c:'#0B0B0B'},
-  DEV:    {bg:'#6BCB77',c:'#0B0B0B'},
-  PRT:    {bg:'#A8DADC',c:'#0B0B0B'},
-  PRG:    {bg:'#C77DFF',c:'#0B0B0B'},
-  DDAY:   {bg:'#E63946',c:'#fff'},
-  FINAL:  {bg:'transparent',c:'#555',border:'1.5px solid #999'},
-  FOLLOWUP:{bg:'rgba(45,198,83,.15)',c:'#1a8a3a',border:'1px solid #2DC653'},
-  TBC:    {bg:'rgba(100,180,210,.15)',c:'#2a7a9a',border:'1px dashed #6ab4d2'},
-  SV:     {bg:'#E8F4F8',c:'#1565C0',border:'1px solid #90CAF9'},
-  MTG:    {bg:'#FFF3E0',c:'#E65100',border:'1px solid #FFB74D'},
-  OFF:    {bg:'#1A1A1A',c:'#fff'},
-};
-const PERSONAL_TYPES=new Set(['FOLLOWUP','TBC','SV','MTG','OFF']);
-const OWNERS={pierre:'#4895EF',felix:'#F72585',lucien:'#F9C22E'};
-
 // ═══════════════════════════════════════════════════════════════════
 // DATA MODEL v2
 // ═══════════════════════════════════════════════════════════════════
 let PROJECTS=[
-  {id:'skrillex',      name:'Skrillex',          owner:'felix', type:'identité',status:'on-track',priority:'normal',archived:false,
-   milestones:[{type:'ESQ',date:'2026-04-02',duration:1,client:false}]},
-  {id:'offwhite',      name:'Off White 10X10',    owner:'felix', type:'identité',status:'on-track',priority:'normal',archived:false, milestones:[]},
-  {id:'polvilla',      name:'Pol Villa',          owner:'felix', type:'identité',status:'on-track',priority:'normal',archived:false, milestones:[]},
-  {id:'vaugirard',     name:'Vaugirard',          owner:'felix', type:'identité',status:'on-track',priority:'normal',archived:false, milestones:[]},
-  {id:'polboros',      name:'Pol Boros',          owner:'felix', type:'print',   status:'on-track',priority:'normal',archived:false, milestones:[]},
-  {id:'y3ss27',        name:'Y-3 SS27',           owner:'felix', type:'digital', status:'on-track',priority:'normal',archived:false,
-   milestones:[]},
-  {id:'takbetruss',    name:'Takbe Truss',        owner:'lucien',type:'identité',status:'on-track',priority:'normal',archived:false, milestones:[]},
-  {id:'dekmantel',     name:'Dekmantel',          owner:'lucien',type:'digital', status:'on-track',priority:'normal',archived:false,
-   milestones:[{type:'DEV',date:'2026-04-09',duration:1,client:false}]},
-  {id:'poissonvolant', name:'Poisson Volant',     owner:'lucien',type:'identité',status:'on-track',priority:'normal',archived:false,
-   milestones:[{type:'DEV',date:'2026-04-01',duration:1,client:false}]},
-  {id:'hermes',        name:'Hermès',             owner:'pierre',type:'print',   status:'on-track',priority:'haute', archived:false,
-   milestones:[{type:'DEV',date:'2026-04-03',duration:1,client:false}]},
-  {id:'pucci',         name:'Pucci',              owner:'pierre',type:'digital', status:'at-risk', priority:'haute', archived:false,
-   milestones:[{type:'PRG',date:'2026-04-17',duration:1,client:false},{type:'DDAY',date:'2026-04-18',duration:1,client:true}]},
-  {id:'magazine',      name:'Magazine',           owner:'pierre',type:'print',   status:'on-track',priority:'normal',archived:false, milestones:[]},
-  {id:'baselsc',       name:'Basel Social Club',  owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:false, milestones:[]},
-  {id:'erwan',         name:'Erwan',              owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:false, milestones:[]},
+  {id:'polvilla',name:'Pol Villa',owner:'felix',type:'identité',status:'on-track',priority:'normal',archived:true,milestones:[{type:'MTG',date:'2026-05-14',duration:1,client:false},{type:'DDAY',date:'2026-05-15',duration:1,client:false}]},
+  {id:'polboros',name:'Pol Boros',owner:'felix',type:'print',status:'on-track',priority:'normal',archived:true,milestones:[{type:'MTG',date:'2026-04-28',duration:2,client:false},{type:'DDAY',date:'2026-04-30',duration:1,client:false}]},
+  {id:'y3ss27',name:'Y-3 SS27',owner:'felix',type:'digital',status:'on-track',priority:'normal',archived:false,milestones:[{type:'ESQ',date:'2026-04-22',duration:1,client:false},{type:'ESQ',date:'2026-05-12',duration:1,client:false},{type:'FOLLOWUP',date:'2026-05-06',duration:1,client:false},{type:'SV',date:'2026-05-22',duration:1,client:false},{type:'PRG',date:'2026-06-25',duration:2,client:false},{type:'DDAY',date:'2026-06-27',duration:1,client:false},{type:'ESQ',date:'2026-06-03',duration:1,client:false}]},
+  {id:'takbetruss',name:'Takbe Truss',owner:'lucien',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'PRG',date:'2026-06-28',duration:3,client:false},{type:'OFF',date:'2026-07-01',duration:14,client:false},{type:'OFF',date:'2026-08-07',duration:11,client:false}]},
+  {id:'dekmantel',name:'Dekmantel',owner:'lucien',type:'digital',status:'on-track',priority:'normal',archived:false,milestones:[{type:'PRT',date:'2026-05-19',duration:1,client:false},{type:'PRT',date:'2026-05-19',duration:1,client:false},{type:'DEV',date:'2026-05-22',duration:1,client:false},{type:'PRG',date:'2026-07-28',duration:3,client:false},{type:'DDAY',date:'2026-07-31',duration:3,client:false}]},
+  {id:'poissonvolant',name:'Poisson Volant',owner:'lucien',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'PRT',date:'2026-06-10',duration:1,client:false},{type:'MTG',date:'2026-07-20',duration:11,client:false}]},
+  {id:'hermes',name:'Hermès',owner:'pierre',type:'print',status:'on-track',priority:'haute',archived:true,milestones:[{type:'PRG',date:'2026-05-26',duration:6,client:false},{type:'DDAY',date:'2026-06-01',duration:1,client:false}]},
+  {id:'magazine',name:'Magazine',owner:'pierre',type:'print',status:'on-track',priority:'normal',archived:false,milestones:[{type:'PRG',date:'2026-08-12',duration:2,client:false},{type:'DDAY',date:'2026-08-14',duration:3,client:false},{type:'OFF',date:'2026-08-17',duration:14,client:false}]},
+  {id:'baselsc',name:'Basel Social Club',owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'FOLLOWUP',date:'2026-04-22',duration:3,client:false},{type:'FOLLOWUP',date:'2026-04-27',duration:5,client:false},{type:'FOLLOWUP',date:'2026-05-04',duration:3,client:false},{type:'FOLLOWUP',date:'2026-05-11',duration:3,client:false},{type:'PRG',date:'2026-05-18',duration:3,client:false},{type:'PRG',date:'2026-06-08',duration:3,client:false},{type:'MTG',date:'2026-06-11',duration:2,client:false},{type:'PRG',date:'2026-06-13',duration:2,client:false},{type:'MTG',date:'2026-06-21',duration:2,client:false},{type:'DDAY',date:'2026-06-15',duration:1,client:false}]},
+  {id:'balenciagashanghai3788',name:'Balenciaga Shanghai',owner:'felix',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'FOLLOWUP',date:'2026-05-04',duration:1,client:false},{type:'DDAY',date:'2026-05-05',duration:1,client:false},{type:'FOLLOWUP',date:'2026-05-04',duration:1,client:false}]},
+  {id:'polrotunda6080',name:'Pol Rotunda',owner:'felix',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'FOLLOWUP',date:'2026-04-23',duration:2,client:false},{type:'FOLLOWUP',date:'2026-04-27',duration:1,client:false},{type:'ESQ',date:'2026-04-29',duration:1,client:false},{type:'ESQ',date:'2026-06-18',duration:1,client:false},{type:'OFF',date:'2026-07-11',duration:10,client:false},{type:'PRG',date:'2026-09-26',duration:3,client:false},{type:'DDAY',date:'2026-09-29',duration:1,client:false}]},
+  {id:'matiresfcalesss27302',name:'Matières Fécales SS27',owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'INT',date:'2026-04-22',duration:1,client:false},{type:'ESQ',date:'2026-06-09',duration:1,client:false},{type:'ESQ',date:'2026-06-17',duration:1,client:false}]},
+  {id:'fchains8061',name:'FC - HAINS',owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:true,milestones:[{type:'FOLLOWUP',date:'2026-04-27',duration:5,client:false},{type:'FOLLOWUP',date:'2026-05-04',duration:3,client:false},{type:'FOLLOWUP',date:'2026-05-11',duration:3,client:false}]},
+  {id:'fcnuitblanche3368',name:'FC - Nuit Blanche',owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:true,milestones:[{type:'FOLLOWUP',date:'2026-04-22',duration:3,client:false},{type:'FOLLOWUP',date:'2026-04-27',duration:5,client:false},{type:'FOLLOWUP',date:'2026-05-04',duration:3,client:false},{type:'FOLLOWUP',date:'2026-05-11',duration:3,client:false},{type:'DEV',date:'2026-05-22',duration:1,client:false},{type:'PRG',date:'2026-06-02',duration:4,client:false},{type:'DDAY',date:'2026-06-06',duration:1,client:false}]},
+  {id:'erwanbienalelyon3597',name:'Erwan Bienale Lyon',owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[]},
+  {id:'theomercier2438',name:'THEO MERCIER',owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'ESQ',date:'2026-06-12',duration:1,client:false},{type:'OFF',date:'2026-08-17',duration:14,client:false}]},
+  {id:'mm6ss271115',name:'MM6 SS27',owner:'felix',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'ESQ',date:'2026-06-04',duration:1,client:false},{type:'OFF',date:'2026-08-01',duration:16,client:false},{type:'PRG',date:'2026-09-21',duration:2,client:false},{type:'DDAY',date:'2026-09-23',duration:1,client:false}]},
+  {id:'tomford2696',name:'Tom Ford',owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'PRG',date:'2026-09-27',duration:3,client:false},{type:'DDAY',date:'2026-09-30',duration:1,client:false},{type:'OFF',date:'2026-08-17',duration:14,client:false},{type:'ESQ',date:'2026-06-26',duration:1,client:false},{type:'ESQ',date:'2026-07-02',duration:1,client:false}]},
+  {id:'skrillex5969',name:'Skrillex',owner:'felix',type:'identité',status:'on-track',priority:'normal',archived:true,milestones:[]},
+  {id:'pucciwinterinstallation6095',name:'Pucci Winter Installation',owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'SV',date:'2026-06-05',duration:1,client:false},{type:'OFF',date:'2026-08-17',duration:14,client:false}]},
+  {id:'skrillexgasworks2589',name:'Skrillex Gasworks',owner:'felix',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'ESQ',date:'2026-07-03',duration:1,client:false},{type:'ESQ',date:'2026-07-09',duration:1,client:false},{type:'OFF',date:'2026-08-01',duration:16,client:false},{type:'DDAY',date:'2026-08-28',duration:2,client:false},{type:'PRG',date:'2026-08-26',duration:2,client:false}]},
+  {id:'skrillexnavypier8656',name:'Skrillex Navy Pier',owner:'felix',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'ESQ',date:'2026-07-03',duration:1,client:false},{type:'ESQ',date:'2026-08-08',duration:1,client:false},{type:'DDAY',date:'2026-09-11',duration:2,client:false},{type:'PRG',date:'2026-09-09',duration:2,client:false}]},
+  {id:'balenciagashanghai8012',name:'Balenciaga Shanghai',owner:'pierre',type:'identité',status:'on-track',priority:'normal',archived:false,milestones:[{type:'ESQ',date:'2026-07-01',duration:1,client:false}]},
 ];
 
 let PEOPLE=[
-  {id:'aleksandra',name:'ALEKSANDRA',maxLoad:3,absences:[],
-   assignments:[
-     {projectId:'skrillex',   lead:true,  personalMilestones:[]},
-     {projectId:'offwhite',   lead:false, personalMilestones:[]},
-   ]},
-  {id:'margot',name:'MARGOT',maxLoad:4,absences:[],
-   assignments:[
-     {projectId:'polvilla',   lead:true,  personalMilestones:[{type:'FOLLOWUP',date:'2026-04-07',duration:5,client:false}]},
-     {projectId:'vaugirard',  lead:true,  personalMilestones:[{type:'FOLLOWUP',date:'2026-04-07',duration:5,client:false}]},
-     {projectId:'polboros',   lead:true,  personalMilestones:[{type:'FOLLOWUP',date:'2026-04-07',duration:5,client:false}]},
-     {projectId:'y3ss27',     lead:true,  personalMilestones:[]},
-   ]},
-  {id:'lucien',name:'LUCIEN',maxLoad:3,absences:[],
-   assignments:[
-     {projectId:'takbetruss',  lead:true,  personalMilestones:[]},
-     {projectId:'dekmantel',   lead:true,  personalMilestones:[]},
-     {projectId:'poissonvolant',lead:true, personalMilestones:[]},
-   ]},
-  {id:'priscille',name:'PRISCILLE',maxLoad:3,absences:[],
-   assignments:[
-     {projectId:'hermes',   lead:true,  personalMilestones:[]},
-     {projectId:'pucci',    lead:true,  personalMilestones:[]},
-     {projectId:'magazine', lead:false, personalMilestones:[]},
-   ]},
-  {id:'bensu',name:'BENSU',maxLoad:3,absences:[],
-   assignments:[
-     {projectId:'dekmantel',lead:false, personalMilestones:[]},
-     {projectId:'y3ss27',   lead:false, personalMilestones:[{type:'INT',date:'2026-04-01',duration:1,client:false}]},
-     {projectId:'skrillex', lead:false, personalMilestones:[]},
-   ]},
-  {id:'orlando',name:'ORLANDO',maxLoad:2,absences:[],
-   assignments:[
-     {projectId:'pucci',   lead:false, personalMilestones:[]},
-     {projectId:'magazine',lead:false, personalMilestones:[]},
-   ]},
-  {id:'yoojin',name:'YOOJIN',maxLoad:2,absences:[],
-   assignments:[
-     {projectId:'baselsc', lead:true, personalMilestones:[]},
-   ]},
-  {id:'kaito',name:'KAITO',maxLoad:3,absences:[],
-   assignments:[
-     {projectId:'erwan',        lead:true,  personalMilestones:[]},
-     {projectId:'poissonvolant',lead:false, personalMilestones:[]},
-     {projectId:'vaugirard',    lead:false, personalMilestones:[]},
-   ]},
+  {id:'aleksandra',name:'ALEKSANDRA',maxLoad:3,absences:[],assignments:[{projectId:'mm6ss271115',lead:true,personalMilestones:[{type:'OFF',date:'2026-06-25',duration:4,client:false}]},{projectId:'skrillexgasworks2589',lead:true,personalMilestones:[{type:'OFF',date:'2026-06-25',duration:4,client:false}]},{projectId:'skrillexnavypier8656',lead:true,personalMilestones:[{type:'OFF',date:'2026-08-01',duration:16,client:false},{type:'OFF',date:'2026-06-25',duration:4,client:false}]}]},
+  {id:'margot',name:'MARGOT',maxLoad:4,absences:[],assignments:[{projectId:'y3ss27',lead:true,personalMilestones:[{type:'OFF',date:'2026-08-13',duration:18,client:false}]},{projectId:'polrotunda6080',lead:true,personalMilestones:[{type:'OFF',date:'2026-08-13',duration:18,client:false}]},{projectId:'matiresfcalesss27302',lead:true,personalMilestones:[{type:'OFF',date:'2026-07-11',duration:10,client:false},{type:'OFF',date:'2026-08-13',duration:18,client:false}]},{projectId:'balenciagashanghai8012',lead:true,personalMilestones:[{type:'OFF',date:'2026-07-11',duration:10,client:false},{type:'OFF',date:'2026-08-13',duration:18,client:false}]}]},
+  {id:'lucien',name:'LUCIEN',maxLoad:3,absences:[],assignments:[{projectId:'takbetruss',lead:true,personalMilestones:[]},{projectId:'dekmantel',lead:true,personalMilestones:[{type:'OFF',date:'2026-07-01',duration:14,client:false},{type:'OFF',date:'2026-08-07',duration:11,client:false}]},{projectId:'poissonvolant',lead:true,personalMilestones:[{type:'FOLLOWUP',date:'2026-05-19',duration:1,client:false},{type:'OFF',date:'2026-07-01',duration:14,client:false},{type:'OFF',date:'2026-08-07',duration:11,client:false}]},{projectId:'skrillexnavypier8656',lead:true,personalMilestones:[{type:'OFF',date:'2026-07-01',duration:14,client:false},{type:'OFF',date:'2026-08-07',duration:11,client:false}]}]},
+  {id:'priscille',name:'PRISCILLE',maxLoad:3,absences:[],assignments:[{projectId:'magazine',lead:false,personalMilestones:[]},{projectId:'theomercier2438',lead:true,personalMilestones:[]},{projectId:'tomford2696',lead:true,personalMilestones:[]},{projectId:'pucciwinterinstallation6095',lead:true,personalMilestones:[]},{projectId:'balenciagashanghai8012',lead:true,personalMilestones:[]}]},
+  {id:'bensu',name:'BENSU',maxLoad:3,absences:[],assignments:[{projectId:'dekmantel',lead:false,personalMilestones:[]},{projectId:'y3ss27',lead:true,personalMilestones:[]}]},
+  {id:'orlando',name:'ORLANDO',maxLoad:2,absences:[],assignments:[{projectId:'y3ss27',lead:true,personalMilestones:[{type:'OFF',date:'2026-05-18',duration:4,client:false},{type:'OFF',date:'2026-05-28',duration:1,client:false},{type:'OFF',date:'2026-06-04',duration:1,client:false},{type:'OFF',date:'2026-06-11',duration:1,client:false},{type:'OFF',date:'2026-06-18',duration:2,client:false},{type:'OFF',date:'2026-06-22',duration:5,client:false},{type:'OFF',date:'2026-08-08',duration:16,client:false},{type:'OFF',date:'2026-07-31',duration:6,client:false},{type:'OFF',date:'2026-07-02',duration:1,client:false},{type:'OFF',date:'2026-07-09',duration:5,client:false}]},{projectId:'matiresfcalesss27302',lead:true,personalMilestones:[{type:'OFF',date:'2026-05-18',duration:5,client:false},{type:'OFF',date:'2026-05-28',duration:1,client:false},{type:'OFF',date:'2026-06-04',duration:1,client:false},{type:'OFF',date:'2026-06-11',duration:1,client:false},{type:'OFF',date:'2026-06-18',duration:2,client:false},{type:'OFF',date:'2026-06-22',duration:5,client:false},{type:'OFF',date:'2026-08-08',duration:16,client:false},{type:'OFF',date:'2026-07-31',duration:6,client:false},{type:'OFF',date:'2026-07-02',duration:1,client:false},{type:'OFF',date:'2026-07-09',duration:5,client:false}]}]},
+  {id:'yoojin',name:'YOOJIN',maxLoad:2,absences:[],assignments:[{projectId:'baselsc',lead:true,personalMilestones:[]}]},
+  {id:'kaito',name:'KAITO',maxLoad:3,absences:[],assignments:[{projectId:'poissonvolant',lead:false,personalMilestones:[]},{projectId:'erwanbienalelyon3597',lead:true,personalMilestones:[]}]},
 ];
 
 let EVENTS=[
-  {label:'✈ DÉPLACEMENT SYRACUSE — PD · PR · FW · SG',start:'2026-04-13',end:'2026-04-19',color:'#2DC653'},
+  {label:'MILAN PD/FW/PR',start:'2026-04-22',end:'2026-04-24',color:'#2DC653'},
+  {label:'BK/MA',start:'2026-04-24',end:'2026-04-22',color:'#4895EF'},
+  {label:'BERLIN FW/AO',start:'2026-04-28',end:'2026-04-30',color:'#2DC653'},
+  {label:'BERLIN FW/PD',start:'2026-05-01',end:'2026-05-04',color:'#2DC653'},
+  {label:'PD/FW',start:'2026-05-06',end:'2026-05-10',color:'#4895EF'},
+  {label:'OFF SITE',start:'2026-05-12',end:'2026-05-13',color:'#4895EF'},
+  {label:'ROME MA',start:'2026-05-14',end:'2026-05-15',color:'#2DC653'},
+  {label:'FW/PD/SW',start:'2026-05-22',end:'2026-05-26',color:'#4895EF'},
+  {label:'BERLIN FW/AO/LN',start:'2026-05-26',end:'2026-06-01',color:'#2DC653'},
+  {label:'SEOUL PD',start:'2026-05-26',end:'2026-06-03',color:'#2DC653'},
+  {label:'FW',start:'2026-06-04',end:'2026-06-09',color:'#4895EF'},
 ];
 
 let PIPELINE=[
-  {name:'Projet exemple',owner:'pierre',startDate:'2026-06-01',people:[]},
+  {name:'Skrillex Big Show 2027',owner:'felix',startDate:'2026-05-19',people:['aleksandra']},
+  {name:'Ryoji Ikeda',owner:'pierre',startDate:'2026-05-19',people:['lucien']},
+  {name:'Ben UFO',owner:'felix',startDate:'2026-05-19',people:[]},
 ];
+
 
 // ═══════════════════════════════════════════════════════════════════
 // STATE
