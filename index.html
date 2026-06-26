@@ -1446,16 +1446,8 @@ function saveData(){
   catch(e){console.warn('Save failed',e);}
 }
 function loadData(){
-  try{
-    const raw=localStorage.getItem(LS_KEY);if(!raw)return false;
-    const d=JSON.parse(raw);
-    if(d.PROJECTS)PROJECTS.length=0,PROJECTS.push(...d.PROJECTS);
-    if(d.PEOPLE)PEOPLE.length=0,PEOPLE.push(...d.PEOPLE);
-    if(d.EVENTS)EVENTS.length=0,EVENTS.push(...d.EVENTS);
-    if(d.PIPELINE)PIPELINE.length=0,PIPELINE.push(...d.PIPELINE);
-    if(d.FRI_OFF){FRI_OFF.clear();d.FRI_OFF.forEach(id=>FRI_OFF.add(id));}
-    return true;
-  }catch(e){return false;}
+  // Données chargées depuis le fichier HTML uniquement — pas de localStorage
+  return false;
 }
 function resetData(){
   if(!confirm('⚠️ Remettre aux données d\'origine ?'))return;
