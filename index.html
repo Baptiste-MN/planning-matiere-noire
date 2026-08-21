@@ -246,7 +246,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;mi
   <button class="btn green" onclick="openAddProjectModal()">+ Projet</button>
   <button class="btn green" onclick="openAddPersonModal()">+ Personne</button>
   <button class="btn" style="border-color:#607D8B;color:#607D8B;" onclick="toggleDateFilter()">📅 Période</button>
-  <button class="btn" id="past-btn" style="border-color:#999;color:#999;" onclick="togglePast()" title="Afficher/masquer les périodes passées">⏮ Passé</button>
+  <button class="btn" id="past-btn" style="border-color:#999;color:#999;" onclick="togglePast()" title="Remonter au 1er janvier 2026 (historique repris du calendrier)">⏮ Historique</button>
   <button class="btn blue" onclick="openExportModal()">⬇ Données</button>
   <button class="btn orange" onclick="exportPNG()">📷 PNG</button>
   <button class="btn orange" onclick="exportPDF()">📄 PDF</button>
@@ -305,7 +305,8 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;mi
     <div class="lg-item"><div class="lg-sw" style="background:rgba(45,198,83,.15);border:1px solid #2DC653;"></div>Follow up</div>
     <div class="lg-item"><div class="lg-sw" style="background:#E8F4F8;color:#2a7a9a;border:1px dashed #6ab4d2;font-size:7px;">SV</div>Site Visit</div>
     <div class="lg-item"><div class="lg-sw" style="background:#FFF3E0;color:#E65100;border:1px solid #FFB74D;font-size:7px;">MTG</div>Montage</div>
-    <div class="lg-item"><div class="lg-sw" style="background:#1A1A1A;color:#fff;font-size:7px;">OFF</div>Off / Congé</div>
+    <div class="lg-item"><div class="lg-sw" style="background:#1A1A1A;color:#fff;font-size:7px;">OFF</div>Off saisi ici</div>
+    <div class="lg-item"><div class="lg-sw" style="background:#1A1A1A;color:#fff;font-size:7px;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,.25) 3px,rgba(255,255,255,.25) 6px);">OFF</div>Congé validé — automatique</div>
   </div>
   <div class="lg-grp">
     <div class="lg-title">Chef de projet</div>
@@ -352,7 +353,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;mi
 // ═══════════════════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════════════════
-const START_DEFAULT = new Date(2026,2,30);
+const START_DEFAULT = new Date(2026,0,1);
 const END_DEFAULT   = new Date(2028,0,1);
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 
@@ -1651,7 +1652,24 @@ function readRef(raw){
   return out;
 }
 
-let REF_PEOPLE=[];
+function readRefProjects(raw){
+  var out=[];
+  if(!raw) return out;
+  var entries=Array.isArray(raw)?raw.map(function(v,i){return [String(i),v];}):Object.entries(raw);
+  entries.forEach(function(pair){
+    var key=pair[0], v=pair[1];
+    if(!v||typeof v!=='object') return;
+    var nom=v.nom||v.name||v.canonique||v.label||key;
+    var statut=(v.statut||v.status||'').toString().toLowerCase();
+    var alias=v.alias||v.aliases||[];
+    if(!Array.isArray(alias)) alias=typeof alias==='object'?Object.values(alias):[alias];
+    out.push({key:key,nom:String(nom),statut:statut,alias:alias.map(String)});
+  });
+  return out;
+}
+
+let REF_PEOPLE=[], REF_PROJECTS=[];
+let projMatched=0, projAbsents=[];
 let REF_BY_PID={};       // planning id -> entrée référentiel
 let NAME_INDEX={};       // nom normalisé -> planning id
 let refUnmatched=[];     // référentiel non rattaché au planning
@@ -1705,6 +1723,26 @@ function resolveRef(){
   }
 }
 
+function resolveProjects(){
+  projMatched=0; projAbsents=[];
+  var pris={};
+  REF_PROJECTS.forEach(function(r){
+    var cles=[norm(r.nom)].concat(r.alias.map(norm));
+    var hit=PROJECTS.find(function(p){
+      if(pris[p.id]) return false;
+      var pn=norm(p.name);
+      return cles.indexOf(pn)!==-1;
+    });
+    if(hit){
+      pris[hit.id]=1;
+      hit.name=r.nom;          // le référentiel fait foi sur le nom
+      projMatched++;
+    } else if(['actif','livre','en_cours'].indexOf(r.statut)!==-1){
+      projAbsents.push(r);
+    }
+  });
+}
+
 function matchPerson(rawName){
   if(!rawName) return null;
   if(ALIAS[rawName]) return ALIAS[rawName];
@@ -1746,6 +1784,7 @@ function buildConges(){
 
 function refresh(){
   resolveRef();
+  resolveProjects();
   buildConges();
   if(typeof buildFilterBtns==='function') buildFilterBtns();
   if(typeof render==='function') render();
@@ -1757,9 +1796,10 @@ function paint(){
         b=document.getElementById('cg-orph');
   if(!d||!t) return;
   const nHidden=window.HIDDEN_PEOPLE.size;
-  const issues=congesOrphans.length+refUnmatched.length;
+  const issues=congesOrphans.length+refUnmatched.length+projAbsents.length;
   const bits=[];
-  if(refLoaded) bits.push(`${Object.keys(REF_BY_PID).length} personnes du référentiel`);
+  if(refLoaded) bits.push(`${Object.keys(REF_BY_PID).length} personnes`);
+  if(projMatched) bits.push(`${projMatched} projets du référentiel`);
   bits.push(`${congesKept} absence${congesKept>1?'s':''} validée${congesKept>1?'s':''}`);
   if(nHidden) bits.push(`${nHidden} archivée${nHidden>1?'s':''} masquée${nHidden>1?'s':''}`);
   t.textContent='Synchronisé — '+bits.join(' · ');
@@ -1777,6 +1817,11 @@ onValue(ref(db,'referentiel/people'),snap=>{
   if(t) t.textContent='Référentiel injoignable — noms locaux conservés';
   if(d) d.style.background='#E63946';
 });
+
+onValue(ref(db,'referentiel/projects'),snap=>{
+  REF_PROJECTS=readRefProjects(snap.val());
+  refresh();
+},err=>{ console.error('Référentiel projets:',err); });
 
 onValue(ref(db,'conges'),snap=>{
   congesRaw=snap.val();
@@ -1798,6 +1843,12 @@ window.showCongesOrphans=function(){
   if(refUnmatched.length){
     msg+='Personnes actives du référentiel absentes du planning :\n  '
        + refUnmatched.map(r=>`${r.name} (${r.initials})`).join('\n  ')+'\n\n';
+  }
+  if(projAbsents.length){
+    msg+='Projets actifs du référentiel absents du planning ('+projAbsents.length+') :\n  '
+       + projAbsents.slice(0,25).map(r=>r.nom).join('\n  ')
+       + (projAbsents.length>25?'\n  … et '+(projAbsents.length-25)+' autres':'')
+       + '\n\nCe sont des projets à ajouter au planning si tu veux les suivre ici.\n\n';
   }
   if(!msg){ alert('Tout est rattaché.'); return; }
   msg+='Deux façons de corriger :\n'
