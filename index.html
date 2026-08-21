@@ -612,7 +612,7 @@ function addTL(rRow){
   tl.style.left=(T_OFF*COL+COL/2)+'px';rRow.appendChild(tl);
 }
 
-function addMs(rRow,ms,onClick){
+function addMs(rRow,ms,onClick,isAuto){
   const TOTAL=getTOTAL();
   const o=off(ms.date);if(o<0||o>=TOTAL)return;
   const sty=MS_STYLE[ms.type]||{bg:'#888',c:'#fff'};
@@ -621,7 +621,12 @@ function addMs(rRow,ms,onClick){
 
   if(ms.type==='OFF'){
     // Bloc OFF = pleine hauteur, fond noir semi-transparent
-    blk.style.cssText=`position:absolute;top:0;bottom:0;left:${o*COL}px;width:${dur*COL}px;background:rgba(20,20,20,.85);z-index:8;cursor:pointer;display:flex;align-items:center;justify-content:center;`;
+    const bg=isAuto?'rgba(20,20,20,.78)':'rgba(20,20,20,.85)';
+    blk.style.cssText=`position:absolute;top:0;bottom:0;left:${o*COL}px;width:${dur*COL}px;background:${bg};z-index:8;cursor:${isAuto?'default':'pointer'};display:flex;align-items:center;justify-content:center;`;
+    if(isAuto){
+      blk.title=`Congés validés${ms.note?' — '+ms.note:''} (source : outil congés)`;
+      blk.style.backgroundImage='repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(255,255,255,.10) 5px,rgba(255,255,255,.10) 10px)';
+    }
     blk.innerHTML=`<span style="font-family:'DM Mono',monospace;font-size:8px;font-weight:700;color:#fff;letter-spacing:.06em;transform:none;">OFF</span>`;
   } else {
     blk.className='ms';
@@ -715,9 +720,32 @@ function render(){
   setTimeout(updateMonthIndicator,0);
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// CONGÉS AUTOMATIQUES — injectés au rendu, jamais stockés
+// ═══════════════════════════════════════════════════════════════════
+window.AUTO_OFF = {};        // personId -> [{date,duration,type,note}]
+window.CONGES_ORPHANS = [];  // noms non rattachés
+window.CONGES_STATE = 'init';
+
+// Personnes masquées car archivées dans le référentiel
+window.HIDDEN_PEOPLE = new Set();
+function activePeople(){
+  return PEOPLE.filter(p=>!window.HIDDEN_PEOPLE.has(p.id));
+}
+
+function autoOffFor(personId){
+  return window.AUTO_OFF[personId] || [];
+}
+
+function addAutoOff(rRow, personId){
+  autoOffFor(personId).forEach(ms=>{
+    addMs(rRow, ms, null, true);
+  });
+}
+
 // ─── VUE PAR PERSONNE ───
 function renderPersonView(TOTAL,T_OFF){
-  const vis=PEOPLE.filter(p=>{
+  const vis=activePeople().filter(p=>{
     if(cmpMode&&cmpIds.size>0)return cmpIds.has(p.id);
     if(filterPersonId!=='all')return p.id===filterPersonId;
     return true;
@@ -743,6 +771,7 @@ function renderPersonView(TOTAL,T_OFF){
         const s=document.createElement('div');s.className='abs-stripe';
         s.style.left=(o*COL)+'px';s.style.width=COL+'px';r.appendChild(s);
       });
+      addAutoOff(r,person.id);
       addTL(r);
     });
 
@@ -765,6 +794,7 @@ function renderPersonView(TOTAL,T_OFF){
         asgn.personalMilestones.forEach((ms,msIdx)=>{
           addMs(r,ms,()=>openEditPersonalMsModal(pIdx,aIdx,msIdx));
         });
+        addAutoOff(r,person.id);
         addTL(r);
       });
     });
@@ -782,7 +812,7 @@ function renderProjectView(TOTAL,T_OFF){
   visProjects.forEach(proj=>{
     const oc=OWNERS[proj.owner]||'#888';
     const pjIdx=PROJECTS.indexOf(proj);
-    const assignees=PEOPLE.filter(p=>p.assignments.some(a=>a.projectId===proj.id));
+    const assignees=activePeople().filter(p=>p.assignments.some(a=>a.projectId===proj.id));
 
     // Project group header
     addRow('proj-grp-hdr',
@@ -817,6 +847,7 @@ function renderProjectView(TOTAL,T_OFF){
         asgn.personalMilestones.forEach((ms,msIdx)=>{
           addMs(r,ms,()=>openEditPersonalMsModal(pIdx,aIdx,msIdx));
         });
+        addAutoOff(r,person.id);
         addTL(r);
       });
     });
@@ -857,7 +888,7 @@ function toggleCmp(){
 function buildFilterBtns(){
   // Person buttons
   const pbx=document.getElementById('pbx');pbx.innerHTML='';
-  PEOPLE.forEach(p=>{
+  activePeople().forEach(p=>{
     const btn=document.createElement('button');btn.className='btn';btn.textContent=p.name;
     btn.onclick=function(){setViewMode('person',p.id,this);};
     pbx.appendChild(btn);
@@ -1383,7 +1414,7 @@ function renderCharge(){
   const todayWs=getWeekStart(TODAY);
   const startIdx=Math.max(0,weeks.findIndex(w=>w>=todayWs)-1);
   const visWeeks=weeks.slice(startIdx,startIdx+16);
-  const vis=PEOPLE.filter(p=>filterPersonId==='all'||p.id===filterPersonId);
+  const vis=activePeople().filter(p=>filterPersonId==='all'||p.id===filterPersonId);
 
   visWeeks.forEach(weekStart=>{
     const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);
@@ -1528,6 +1559,234 @@ if(rp){
   rp.addEventListener('scroll',updateMonthIndicator);
   updateMonthIndicator();
 }
+
+</script>
+
+<div id="conges-bar" style="position:fixed;bottom:0;left:0;right:0;z-index:400;background:#111;color:#EDEBE4;
+  font-family:'DM Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.04em;
+  padding:6px 14px;display:flex;align-items:center;gap:14px;border-top:1px solid #2a2a2a;">
+  <span id="cg-dot" style="width:7px;height:7px;border-radius:50%;background:#666;flex:none;"></span>
+  <span id="cg-txt">Congés — connexion…</span>
+  <span style="flex:1"></span>
+  <button id="cg-orph" onclick="showCongesOrphans()" style="display:none;background:#F9C22E;color:#111;
+    border:0;border-radius:4px;padding:3px 9px;font-family:inherit;font-size:10px;font-weight:700;cursor:pointer;">
+    À rattacher</button>
+  <button onclick="document.getElementById('conges-bar').style.display='none'"
+    style="background:none;border:0;color:#666;cursor:pointer;font-size:13px;line-height:1;">&times;</button>
+</div>
+
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import {getDatabase,ref,onValue} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const app=initializeApp({
+  apiKey:"AIzaSyByf4SmnGJvfkkJVFhfINXikb8I8ge5VRU",
+  authDomain:"matiere-noire-todo.firebaseapp.com",
+  databaseURL:"https://matiere-noire-todo-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"matiere-noire-todo",
+  storageBucket:"matiere-noire-todo.firebasestorage.app",
+  messagingSenderId:"583651643354",
+  appId:"1:583651643354:web:74b78c43316b9d657dfae3"
+});
+const db=getDatabase(app);
+
+// ═══ Table de rattachement manuelle ═══
+// Ne sert que si l'appariement automatique par prénom échoue.
+// Format :  'nom ou id du référentiel' : 'id du planning'
+const ALIAS={
+};
+
+// ═══ Qui n'a pas sa place dans le planning ═══
+// 1. Par catégorie — règle durable, vaut pour toute personne future de ces catégories.
+//    direction  : Félix, Pierre — temps estimé en fin de projet, jamais planifié au jour le jour
+//    overhead   : Sam, Baptiste — travaillent sur le studio, pas sur les projets
+//    prestataire: Sidney — facture ses jours, ne fait pas partie de la charge d'équipe
+const CAT_HORS_PLANNING=new Set(['direction','overhead','prestataire']);
+
+// 2. Par nom — personnes de catégorie « projet » qu'on ne planifie pas ici.
+//    À vider si l'une d'elles revient dans le planning.
+const HORS_PLANNING=new Set(['BENSU','MARIUS','SVEN']);
+
+function norm(s){
+  return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toUpperCase().replace(/[^A-Z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+}
+const firstWord=s=>norm(s).split(' ')[0];
+
+// ─── Lecture souple du référentiel ───
+function readRef(raw){
+  const out=[];
+  if(!raw) return out;
+  const entries=Array.isArray(raw)
+    ? raw.map((v,i)=>[String(i),v])
+    : Object.entries(raw);
+  for(const [key,v] of entries){
+    if(!v||typeof v!=='object') continue;
+    const name = v.nom||v.name||v.fullName||v.prenom||v.label||key;
+    const archived = !!(v.archive||v.archived||v.archivee||v.inactif);
+    const cat = v.categorie||v.category||v.cat||'';
+    const initials = v.initiales||v.initials||v.id||key;
+    out.push({key,name:String(name),archived,cat,initials:String(initials)});
+  }
+  return out;
+}
+
+let REF_PEOPLE=[];
+let REF_BY_PID={};       // planning id -> entrée référentiel
+let NAME_INDEX={};       // nom normalisé -> planning id
+let refUnmatched=[];     // référentiel non rattaché au planning
+let congesOrphans=[];
+let congesKept=0;
+let refLoaded=false, congesRaw=null;
+
+function horsPlanning(r){
+  if(CAT_HORS_PLANNING.has((r.cat||'').toLowerCase())) return true;
+  const f=firstWord(r.name);
+  return HORS_PLANNING.has(f)||HORS_PLANNING.has(norm(r.name))||HORS_PLANNING.has(norm(r.initials));
+}
+
+function resolveRef(){
+  REF_BY_PID={}; NAME_INDEX={}; refUnmatched=[];
+  const taken=new Set();
+
+  for(const r of REF_PEOPLE){
+    let pid = ALIAS[r.name] || ALIAS[r.initials] || ALIAS[r.key] || null;
+    if(!pid){
+      const n=norm(r.name), f=firstWord(r.name);
+      const hit=PEOPLE.find(p=>{
+        const pn=norm(p.name), pid2=norm(p.id);
+        return pn===n||pn===f||pid2===f||pid2===n;
+      });
+      if(hit) pid=hit.id;
+    }
+    if(pid&&PEOPLE.some(p=>p.id===pid)&&!taken.has(pid)){
+      taken.add(pid);
+      REF_BY_PID[pid]=r;
+      NAME_INDEX[norm(r.name)]=pid;
+      NAME_INDEX[firstWord(r.name)]=pid;
+      NAME_INDEX[norm(r.initials)]=pid;
+    } else if(!pid && !r.archived && !horsPlanning(r)){
+      refUnmatched.push(r);
+    }
+  }
+
+  // Le référentiel fait foi : noms + archivage
+  window.HIDDEN_PEOPLE=new Set();
+  for(const p of PEOPLE){
+    const r=REF_BY_PID[p.id];
+    if(!r) continue;
+    p.name=r.name.toUpperCase();
+    if(r.archived||horsPlanning(r)) window.HIDDEN_PEOPLE.add(p.id);
+  }
+  // Index de repli sur les noms du planning
+  for(const p of PEOPLE){
+    if(!NAME_INDEX[norm(p.name)]) NAME_INDEX[norm(p.name)]=p.id;
+    if(!NAME_INDEX[firstWord(p.name)]) NAME_INDEX[firstWord(p.name)]=p.id;
+  }
+}
+
+function matchPerson(rawName){
+  if(!rawName) return null;
+  if(ALIAS[rawName]) return ALIAS[rawName];
+  return NAME_INDEX[norm(rawName)] || NAME_INDEX[firstWord(rawName)] || null;
+}
+
+function daysBetween(a,b){
+  const [y1,m1,d1]=a.split('-').map(Number), [y2,m2,d2]=b.split('-').map(Number);
+  return Math.round((new Date(y2,m2-1,d2)-new Date(y1,m1-1,d1))/864e5)+1;
+}
+
+function buildConges(){
+  const raw=congesRaw||{};
+  const list=Array.isArray(raw)?raw.filter(Boolean):Object.values(raw);
+  const map={}, orph={};
+  congesKept=0;
+
+  list.forEach(r=>{
+    if(!r||typeof r!=='object') return;
+    const status=(r.status||r.statut||'').toString().toLowerCase();
+    if(!['approved','validated','validee','valide'].includes(status)) return;
+    const start=r.start||r.debut||r.from||r.startDate;
+    const end=r.end||r.fin||r.to||r.endDate||start;
+    if(!start) return;
+    const who=r.name||r.person||r.employee||r.nom||r.who;
+    const id=matchPerson(who);
+    if(!id){ if(who) orph[who]=(orph[who]||0)+1; return; }
+    if(window.HIDDEN_PEOPLE.has(id)) return;
+    (map[id]=map[id]||[]).push({
+      type:'OFF', date:start, duration:Math.max(1,daysBetween(start,end)),
+      client:false, note:(r.type||r.kind||'Congés')
+    });
+    congesKept++;
+  });
+
+  window.AUTO_OFF=map;
+  congesOrphans=Object.entries(orph).map(([n,c])=>({name:n,count:c}));
+}
+
+function refresh(){
+  resolveRef();
+  buildConges();
+  if(typeof buildFilterBtns==='function') buildFilterBtns();
+  if(typeof render==='function') render();
+  paint();
+}
+
+function paint(){
+  const d=document.getElementById('cg-dot'), t=document.getElementById('cg-txt'),
+        b=document.getElementById('cg-orph');
+  if(!d||!t) return;
+  const nHidden=window.HIDDEN_PEOPLE.size;
+  const issues=congesOrphans.length+refUnmatched.length;
+  const bits=[];
+  if(refLoaded) bits.push(`${Object.keys(REF_BY_PID).length} personnes du référentiel`);
+  bits.push(`${congesKept} absence${congesKept>1?'s':''} validée${congesKept>1?'s':''}`);
+  if(nHidden) bits.push(`${nHidden} archivée${nHidden>1?'s':''} masquée${nHidden>1?'s':''}`);
+  t.textContent='Synchronisé — '+bits.join(' · ');
+  d.style.background=issues?'#F9C22E':'#2DC653';
+  if(b) b.style.display=issues?'inline-block':'none';
+}
+
+onValue(ref(db,'referentiel/people'),snap=>{
+  REF_PEOPLE=readRef(snap.val());
+  refLoaded=true;
+  refresh();
+},err=>{
+  console.error('Référentiel:',err);
+  const t=document.getElementById('cg-txt'), d=document.getElementById('cg-dot');
+  if(t) t.textContent='Référentiel injoignable — noms locaux conservés';
+  if(d) d.style.background='#E63946';
+});
+
+onValue(ref(db,'conges'),snap=>{
+  congesRaw=snap.val();
+  refresh();
+},err=>{
+  console.error('Congés:',err);
+  const t=document.getElementById('cg-txt'), d=document.getElementById('cg-dot');
+  if(t) t.textContent='Congés injoignables — planning affiché sans les absences';
+  if(d) d.style.background='#E63946';
+});
+
+window.showCongesOrphans=function(){
+  const ids=PEOPLE.map(p=>`${p.id}  (${p.name})`).join('\n  ');
+  let msg='';
+  if(congesOrphans.length){
+    msg+='Demandes de congés non rattachées :\n  '
+       + congesOrphans.map(x=>`« ${x.name} » — ${x.count} demande(s)`).join('\n  ')+'\n\n';
+  }
+  if(refUnmatched.length){
+    msg+='Personnes actives du référentiel absentes du planning :\n  '
+       + refUnmatched.map(r=>`${r.name} (${r.initials})`).join('\n  ')+'\n\n';
+  }
+  if(!msg){ alert('Tout est rattaché.'); return; }
+  msg+='Deux façons de corriger :\n'
+     + '1. Aligner le nom dans le référentiel (admin) sur celui du planning\n'
+     + '2. Ajouter une ligne dans ALIAS, en haut du module de synchro :\n'
+     + "   'Nom du référentiel': 'id_du_planning',\n\n"
+     + 'Ids du planning :\n  '+ids;
+  alert(msg);
+};
 </script>
 </body>
 </html>
