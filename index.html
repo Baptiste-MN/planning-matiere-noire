@@ -182,6 +182,9 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;mi
 .cw-info{font-family:'DM Mono',monospace;font-size:8px;color:#999;display:flex;justify-content:space-between;}
 
 /* PIPELINE */
+.pip-ref{border-style:dashed !important;}
+.pip-tag{font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:#9B59B6;
+  border:1px solid #D7BDE2;border-radius:2px;padding:0 4px;vertical-align:2px;}
 .pipeline-section{border-top:4px solid #9B59B6;background:#FAF5FF;padding:18px 24px 24px;}
 .pip-title{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:#7D3C98;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
 .pip-grid{display:flex;flex-wrap:wrap;gap:10px;}
@@ -1377,10 +1380,10 @@ function renderPipeline(){
     const oc=OWNERS[pip.owner]||'#888';
     const peopleNames=(pip.people||[]).map(id=>{const p=getPerson(id);return p?p.name:id;}).join(' · ');
     const dateLabel=pip.startDate?new Date(pip.startDate+'T00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):'—';
-    const card=document.createElement('div');card.className='pip-card';
-    card.innerHTML=`<button class="pip-card-del" onclick="event.stopPropagation();deletePipeline(${pipIdx})">×</button>
-      <div class="pip-card-name">${pip.name}</div>
-      <div class="pip-card-row"><div class="own-sq" style="background:${oc};margin-right:3px;"></div>${pip.owner}</div>
+    const card=document.createElement('div');card.className='pip-card'+(pip.fromRef?' pip-ref':'');
+    card.innerHTML=`${pip.fromRef?'':`<button class="pip-card-del" onclick="event.stopPropagation();deletePipeline(${pipIdx})">×</button>`}
+      <div class="pip-card-name">${pip.name}${pip.fromRef?' <span class="pip-tag">référentiel</span>':''}</div>
+      <div class="pip-card-row"><div class="own-sq" style="background:${oc};margin-right:3px;"></div>${pip.owner||'<span style="color:#C39BD3">propriétaire à définir</span>'}</div>
       <div class="pip-card-row">📅 ${dateLabel}</div>
       ${peopleNames?`<div class="pip-card-row">👥 ${peopleNames}</div>`:''}
       <div style="margin-top:9px;display:flex;gap:5px;">
@@ -1484,7 +1487,7 @@ function openExportModal(){
   modalCtx={mode:'export'};
   document.getElementById('modal-title').innerHTML='Exporter les données <span>Copier dans le fichier HTML</span>';
   document.getElementById('modal-delete').style.display='none';
-  const json=JSON.stringify({PROJECTS,PEOPLE,EVENTS,PIPELINE,FRI_OFF:Array.from(FRI_OFF)},null,2);
+  const json=JSON.stringify({PROJECTS,PEOPLE,EVENTS,PIPELINE:PIPELINE.filter(p=>!p.fromRef),FRI_OFF:Array.from(FRI_OFF)},null,2);
   document.getElementById('modal-body').innerHTML=`<p style="font-size:11px;color:var(--dim);margin-bottom:10px;line-height:1.6;">Copiez ce bloc pour sauvegarder dans le fichier.</p>
     <div class="export-box" onclick="this.focus();document.execCommand('selectAll')">${escHtml(json)}</div>`;
   openModal();
@@ -1529,7 +1532,10 @@ async function exportPDF(){
 // ═══════════════════════════════════════════════════════════════════
 const LS_KEY='mn-planning-v2';
 function saveData(){
-  try{localStorage.setItem(LS_KEY,JSON.stringify({PROJECTS,PEOPLE,EVENTS,PIPELINE,FRI_OFF:Array.from(FRI_OFF)}));}
+  try{
+    const PIPE=PIPELINE.filter(p=>!p.fromRef);   // les projets entrants viennent du référentiel, on ne les fige pas
+    localStorage.setItem(LS_KEY,JSON.stringify({PROJECTS,PEOPLE,EVENTS,PIPELINE:PIPE,FRI_OFF:Array.from(FRI_OFF)}));
+  }
   catch(e){console.warn('Save failed',e);}
 }
 function loadData(){return false;}
@@ -1663,7 +1669,8 @@ function readRefProjects(raw){
     var statut=(v.statut||v.status||'').toString().toLowerCase();
     var alias=v.alias||v.aliases||[];
     if(!Array.isArray(alias)) alias=typeof alias==='object'?Object.values(alias):[alias];
-    out.push({key:key,nom:String(nom),statut:statut,alias:alias.map(String)});
+    var arch=!!(v.archive||v.archived||v.archivee);
+    out.push({key:key,nom:String(nom),statut:statut,archive:arch,alias:alias.map(String)});
   });
   return out;
 }
@@ -1725,21 +1732,33 @@ function resolveRef(){
 
 function resolveProjects(){
   projMatched=0; projAbsents=[];
-  var pris={};
+  var pris={}, vusRef={};
+
   REF_PROJECTS.forEach(function(r){
     var cles=[norm(r.nom)].concat(r.alias.map(norm));
     var hit=PROJECTS.find(function(p){
       if(pris[p.id]) return false;
-      var pn=norm(p.name);
-      return cles.indexOf(pn)!==-1;
+      return cles.indexOf(norm(p.name))!==-1;
     });
     if(hit){
-      pris[hit.id]=1;
-      hit.name=r.nom;          // le référentiel fait foi sur le nom
+      pris[hit.id]=1; vusRef[hit.id]=1;
+      hit.name=r.nom;                    // le référentiel fait foi sur le nom
+      hit.refStatut=r.statut;
+      // ── visibilité pilotée par le référentiel ──
+      hit.archived = r.archive || ['livre','livré','annule','annulé','lead','a_classer'].indexOf(r.statut)!==-1;
       projMatched++;
-    } else if(['actif','livre','en_cours'].indexOf(r.statut)!==-1){
-      projAbsents.push(r);
+    } else if(r.statut==='actif' && !r.archive){
+      projAbsents.push(r);               // actif dans le référentiel, absent du planning
     }
+  });
+
+  // ── projets entrants : les actifs du référentiel que le planning ne connaît pas ──
+  PIPELINE=PIPELINE.filter(function(p){return !p.fromRef;});
+  var dejaLa={};
+  PIPELINE.forEach(function(p){dejaLa[norm(p.name)]=1;});
+  projAbsents.forEach(function(r){
+    if(dejaLa[norm(r.nom)]) return;
+    PIPELINE.push({name:r.nom, owner:'', startDate:'', people:[], fromRef:true, refKey:r.key});
   });
 }
 
@@ -1788,6 +1807,7 @@ function refresh(){
   buildConges();
   if(typeof buildFilterBtns==='function') buildFilterBtns();
   if(typeof render==='function') render();
+  if(typeof renderPipeline==='function') renderPipeline();
   paint();
 }
 
@@ -1796,10 +1816,14 @@ function paint(){
         b=document.getElementById('cg-orph');
   if(!d||!t) return;
   const nHidden=window.HIDDEN_PEOPLE.size;
-  const issues=congesOrphans.length+refUnmatched.length+projAbsents.length;
+  const issues=congesOrphans.length+refUnmatched.length;
   const bits=[];
   if(refLoaded) bits.push(`${Object.keys(REF_BY_PID).length} personnes`);
-  if(projMatched) bits.push(`${projMatched} projets du référentiel`);
+  if(projMatched) bits.push(`${projMatched} projets suivis`);
+  const entrants=PIPELINE.filter(p=>p.fromRef).length;
+  if(entrants) bits.push(`${entrants} entrant${entrants>1?'s':''}`);
+  const masques=PROJECTS.filter(p=>p.archived&&p.refStatut).length;
+  if(masques) bits.push(`${masques} livré${masques>1?'s':''} masqué${masques>1?'s':''}`);
   bits.push(`${congesKept} absence${congesKept>1?'s':''} validée${congesKept>1?'s':''}`);
   if(nHidden) bits.push(`${nHidden} archivée${nHidden>1?'s':''} masquée${nHidden>1?'s':''}`);
   t.textContent='Synchronisé — '+bits.join(' · ');
@@ -1845,10 +1869,11 @@ window.showCongesOrphans=function(){
        + refUnmatched.map(r=>`${r.name} (${r.initials})`).join('\n  ')+'\n\n';
   }
   if(projAbsents.length){
-    msg+='Projets actifs du référentiel absents du planning ('+projAbsents.length+') :\n  '
+    msg+='Projets actifs du référentiel non encore planifiés ('+projAbsents.length+') :\n  '
        + projAbsents.slice(0,25).map(r=>r.nom).join('\n  ')
        + (projAbsents.length>25?'\n  … et '+(projAbsents.length-25)+' autres':'')
-       + '\n\nCe sont des projets à ajouter au planning si tu veux les suivre ici.\n\n';
+       + '\n\nIls apparaissent automatiquement dans le pipeline, en pointillés.\n'
+       + 'Clique sur « → Activer » pour les faire entrer dans le planning.\n\n';
   }
   if(!msg){ alert('Tout est rattaché.'); return; }
   msg+='Deux façons de corriger :\n'
