@@ -250,6 +250,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;mi
   <button class="btn green" onclick="openAddPersonModal()">+ Personne</button>
   <button class="btn" style="border-color:#607D8B;color:#607D8B;" onclick="toggleDateFilter()">📅 Période</button>
   <button class="btn" id="past-btn" style="border-color:#999;color:#999;" onclick="togglePast()" title="Remonter au 1er janvier 2026 (historique repris du calendrier)">⏮ Historique</button>
+  <span id="plan-state" style="font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#666;margin-right:6px;">connexion…</span>
   <button class="btn blue" onclick="openExportModal()">⬇ Données</button>
   <button class="btn blue" onclick="document.getElementById('import-file').click()">⬆ Importer</button>
   <input type="file" id="import-file" accept=".json,application/json" style="display:none">
@@ -2997,7 +2998,7 @@ function importerJSON(file){
     saveData();
     if(typeof buildFilterBtns==='function') buildFilterBtns();
     render(); renderPipeline();
-    alert('Planning importé — '+resume+'.\n\nPour le rendre définitif, ouvre « ⬇ Données » et recopie le bloc dans le fichier HTML.');
+    alert('Planning importé — '+resume+'.\n\nC\'est enregistré pour toute l\'équipe.');
   };
   r.readAsText(file);
 }
@@ -3008,10 +3009,10 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 function openExportModal(){
   modalCtx={mode:'export'};
-  document.getElementById('modal-title').innerHTML='Exporter les données <span>Copier dans le fichier HTML</span>';
+  document.getElementById('modal-title').innerHTML='Exporter les données <span>sauvegarde hors ligne</span>';
   document.getElementById('modal-delete').style.display='none';
   const json=JSON.stringify({PROJECTS,PEOPLE,EVENTS,PIPELINE:PIPELINE.filter(p=>!p.fromRef),FRI_OFF:Array.from(FRI_OFF)},null,2);
-  document.getElementById('modal-body').innerHTML=`<p style="font-size:11px;color:var(--dim);margin-bottom:10px;line-height:1.6;">Copiez ce bloc pour sauvegarder dans le fichier.</p>
+  document.getElementById('modal-body').innerHTML=`<p style="font-size:11px;color:var(--dim);margin-bottom:10px;line-height:1.6;">Le planning est enregistré dans Firebase à chaque modification. Ce bloc n'est qu'une copie de secours.</p>
     <div class="export-box" onclick="this.focus();document.execCommand('selectAll')">${escHtml(json)}</div>`;
   openModal();
 }
@@ -3059,7 +3060,8 @@ function saveData(){
     const PIPE=PIPELINE.filter(p=>!p.fromRef);   // les projets entrants viennent du référentiel, on ne les fige pas
     localStorage.setItem(LS_KEY,JSON.stringify({PROJECTS,PEOPLE,EVENTS,PIPELINE:PIPE,FRI_OFF:Array.from(FRI_OFF)}));
   }
-  catch(e){console.warn('Save failed',e);}
+  catch(e){console.warn('Sauvegarde locale impossible',e);}
+  if(window.FB_SAVE) window.FB_SAVE();          // et dans Firebase, pour toute l'équipe
 }
 function loadData(){return false;}
 function loadData_DISABLED(){
@@ -3127,7 +3129,7 @@ if(rp){
 
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import {getDatabase,ref,onValue} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import {getDatabase,ref,onValue,set} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
 const app=initializeApp({
   apiKey:"AIzaSyByf4SmnGJvfkkJVFhfINXikb8I8ge5VRU",
@@ -3353,6 +3355,61 @@ function paint(){
   d.style.background=issues?'#F9C22E':'#2DC653';
   if(b) b.style.display=issues?'inline-block':'none';
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   SYNCHRONISATION DU PLANNING
+   Les jalons, assignations, événements et le pipeline manuel vivent
+   dans referentiel/planning. Plus aucun copier-coller dans le HTML :
+   ce qui est enregistré ici est vu par tout le monde.
+   Les données écrites en dur dans le fichier ne servent que d'amorçage,
+   la première fois que la branche est vide.
+   ═══════════════════════════════════════════════════════════════ */
+const PLAN=ref(db,'referentiel/planning');
+let planCharge=false, planMuet=false, planMaj=null;
+
+function planEtat(txt,couleur){
+  const e=document.getElementById('plan-state');
+  if(e){ e.textContent=txt; e.style.color=couleur||'#666'; }
+}
+
+window.FB_SAVE=async function(){
+  if(!planCharge) return;
+  planMuet=true;
+  try{
+    await set(PLAN,{
+      projects:PROJECTS, people:PEOPLE, events:EVENTS,
+      pipeline:PIPELINE.filter(p=>!p.fromRef),
+      friOff:Array.from(FRI_OFF), majLe:Date.now()
+    });
+    planMaj=Date.now();
+    planEtat('enregistré · '+new Date().toLocaleTimeString('fr-FR'),'#2DC653');
+  }catch(e){
+    planEtat('non enregistré : '+e.message,'#E63946');
+  }finally{ setTimeout(()=>{planMuet=false;},500); }
+};
+
+onValue(PLAN,snap=>{
+  if(planMuet) return;
+  const v=snap.val();
+  if(!v){                       // branche vide : on amorce avec le contenu du fichier
+    planCharge=true;
+    planEtat('première synchronisation…','#F9C22E');
+    window.FB_SAVE();
+    return;
+  }
+  if(Array.isArray(v.projects)){ PROJECTS.length=0; PROJECTS.push(...v.projects); }
+  if(Array.isArray(v.people)){   PEOPLE.length=0;   PEOPLE.push(...v.people); }
+  if(Array.isArray(v.events)){   EVENTS.length=0;   EVENTS.push(...v.events); }
+  if(Array.isArray(v.pipeline)){ PIPELINE.length=0; PIPELINE.push(...v.pipeline); }
+  if(Array.isArray(v.friOff)){   FRI_OFF.clear();   v.friOff.forEach(x=>FRI_OFF.add(x)); }
+  planCharge=true; planMaj=v.majLe||null;
+  planEtat(planMaj?('à jour · '+new Date(planMaj).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})):'à jour','#2DC653');
+  refresh();
+},err=>{
+  planCharge=false;
+  planEtat('planning non synchronisé : '+err.message,'#E63946');
+  console.error('Planning:',err);
+});
 
 onValue(ref(db,'referentiel/people'),snap=>{
   REF_PEOPLE=readRef(snap.val());
