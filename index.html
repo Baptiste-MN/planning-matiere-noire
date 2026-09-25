@@ -251,6 +251,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;mi
   <button class="btn" style="border-color:#607D8B;color:#607D8B;" onclick="toggleDateFilter()">📅 Période</button>
   <button class="btn" id="past-btn" style="border-color:#999;color:#999;" onclick="togglePast()" title="Remonter au 1er janvier 2026 (historique repris du calendrier)">⏮ Historique</button>
   <span id="plan-state" style="font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#666;margin-right:6px;">connexion…</span>
+  <button class="btn" onclick="diagnostic()" title="Vérifier l'intégrité des données">🩺</button>
   <button class="btn blue" onclick="openExportModal()">⬇ Données</button>
   <button class="btn blue" onclick="document.getElementById('import-file').click()">⬆ Importer</button>
   <input type="file" id="import-file" accept=".json,application/json" style="display:none">
@@ -3317,6 +3318,34 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(inp) inp.onchange=e=>{ const f=e.target.files[0]; if(f) importerJSON(f); e.target.value=''; };
 });
 
+function diagnostic(){
+  const L=[]; const P={}; PROJECTS.forEach(p=>P[p.id]=p);
+  PROJECTS.forEach(p=>{
+    ['id','name','owner','type','status','priority','milestones'].forEach(k=>{
+      if(p[k]===undefined) L.push(`Projet « ${p.name||p.id} » : champ ${k} manquant`); });
+    (p.milestones||[]).forEach(m=>{
+      if(!m.type||!m.date) L.push(`Projet « ${p.name} » : jalon incomplet`); });
+  });
+  PEOPLE.forEach(p=>{
+    if(!Array.isArray(p.absences)) L.push(`${p.name||p.id} : absences manquantes`);
+    if(!Array.isArray(p.assignments)) L.push(`${p.name||p.id} : assignations manquantes`);
+    (p.assignments||[]).forEach(a=>{
+      if(!P[a.projectId]) L.push(`${p.name} est assignée à un projet inexistant (${a.projectId})`);
+      else if(P[a.projectId].archived) L.push(`${p.name} → ${P[a.projectId].name} (projet masqué)`);
+      if(!Array.isArray(a.personalMilestones)) L.push(`${p.name} → ${a.projectId} : jalons personnels manquants`);
+    });
+    const vis=(p.assignments||[]).filter(a=>P[a.projectId]&&!P[a.projectId].archived).length;
+    if(vis>(p.maxLoad||0)) L.push(`${p.name} : ${vis} projets pour un plafond de ${p.maxLoad}`);
+  });
+  EVENTS.forEach(e=>{ if(e.end&&e.start&&e.end<e.start) L.push(`Événement « ${e.label} » : dates inversées`); });
+  const assignes={}; PEOPLE.forEach(p=>(p.assignments||[]).forEach(a=>assignes[a.projectId]=1));
+  PROJECTS.forEach(p=>{ if(!p.archived&&!assignes[p.id]) L.push(`« ${p.name} » est visible mais n'a personne`); });
+  alert(L.length
+    ? `${L.length} point${L.length>1?'s':''} à regarder :\n\n`+L.slice(0,40).join('\n')
+      +(L.length>40?`\n\n… et ${L.length-40} autres`:'')
+    : `Tout est cohérent.\n\n${PROJECTS.length} projets · ${PEOPLE.length} personnes · ${EVENTS.length} événements`);
+}
+
 function openExportModal(){
   modalCtx={mode:'export'};
   document.getElementById('modal-title').innerHTML='Exporter les données <span>sauvegarde hors ligne</span>';
@@ -3675,6 +3704,35 @@ function paint(){
    la première fois que la branche est vide.
    ═══════════════════════════════════════════════════════════════ */
 const PLAN=ref(db,'referentiel/planning');
+
+/* Complète tout ce qui arrive : un champ manquant faisait planter le rendu. */
+function normJalon(m){
+  return {type:m&&m.type?m.type:'INT', date:m&&m.date?m.date:'2026-01-01',
+          duration:Number(m&&m.duration)||1, client:!!(m&&m.client)};
+}
+function normProjet(p){
+  return {id:p.id||('p'+Math.random().toString(36).slice(2,8)), name:p.name||'Sans nom',
+          owner:p.owner||'', type:p.type||'identité', status:p.status||'on-track',
+          priority:p.priority||'normal', archived:!!p.archived,
+          milestones:Array.isArray(p.milestones)?p.milestones.map(normJalon):[],
+          refStatut:p.refStatut};
+}
+function normPersonne(p){
+  return {id:p.id||('u'+Math.random().toString(36).slice(2,8)), name:p.name||'Sans nom',
+          maxLoad:Number(p.maxLoad)||3,
+          absences:Array.isArray(p.absences)?p.absences:[],
+          assignments:(Array.isArray(p.assignments)?p.assignments:[]).map(a=>({
+            projectId:a.projectId, lead:!!a.lead,
+            personalMilestones:Array.isArray(a.personalMilestones)?a.personalMilestones.map(normJalon):[]
+          })).filter(a=>a.projectId)};
+}
+function normEvent(e){
+  return {label:e.label||'', start:e.start||'', end:e.end||e.start||'', color:e.color||'#4895EF'};
+}
+function normPipe(p){
+  return {name:p.name||'Sans nom', owner:p.owner||'', startDate:p.startDate||'',
+          people:Array.isArray(p.people)?p.people:[]};
+}
 let planCharge=false, planMuet=false, planMaj=null;
 
 function planEtat(txt,couleur){
@@ -3707,14 +3765,23 @@ onValue(PLAN,snap=>{
     window.FB_SAVE();
     return;
   }
-  if(Array.isArray(v.projects)){ PROJECTS.length=0; PROJECTS.push(...v.projects); }
-  if(Array.isArray(v.people)){   PEOPLE.length=0;   PEOPLE.push(...v.people); }
-  if(Array.isArray(v.events)){   EVENTS.length=0;   EVENTS.push(...v.events); }
-  if(Array.isArray(v.pipeline)){ PIPELINE.length=0; PIPELINE.push(...v.pipeline); }
+  try{
+    if(Array.isArray(v.projects)){ PROJECTS.length=0; PROJECTS.push(...v.projects.map(normProjet)); }
+    if(Array.isArray(v.people)){   PEOPLE.length=0;   PEOPLE.push(...v.people.map(normPersonne)); }
+    if(Array.isArray(v.events)){   EVENTS.length=0;   EVENTS.push(...v.events.map(normEvent)); }
+    if(Array.isArray(v.pipeline)){ PIPELINE.length=0; PIPELINE.push(...v.pipeline.map(normPipe)); }
+  }catch(e){
+    planEtat('données illisibles : '+e.message,'#E63946');
+    console.error('Planning — données Firebase invalides',e,v);
+    return;
+  }
   if(Array.isArray(v.friOff)){   FRI_OFF.clear();   v.friOff.forEach(x=>FRI_OFF.add(x)); }
   planCharge=true; planMaj=v.majLe||null;
   planEtat(planMaj?('à jour · '+new Date(planMaj).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})):'à jour','#2DC653');
-  refresh();
+  try{ refresh(); }
+  catch(e){ planEtat('erreur d\'affichage : '+e.message,'#E63946'); console.error('Planning — rendu',e); }
+  // les données nettoyées sont réécrites, pour assainir la base une bonne fois
+  if(v.__brut!==false) window.FB_SAVE();
 },err=>{
   planCharge=false;
   planEtat('planning non synchronisé : '+err.message,'#E63946');
