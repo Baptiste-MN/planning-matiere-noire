@@ -438,1559 +438,1869 @@ const OWNERS={pierre:'#4895EF',felix:'#F72585',lucien:'#F9C22E'};
 // DATA MODEL v2
 // ═══════════════════════════════════════════════════════════════════
 let PROJECTS=[
-  {
-    "id": "polvilla",
-    "name": "Pol Villa",
-    "owner": "felix",
-    "archived": true,
-    "milestones": [
-      {
-        "type": "MTG",
-        "date": "2026-05-14",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-05-15",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "polboros",
-    "name": "POL - BOROS 2026",
-    "owner": "felix",
-    "archived": true,
-    "refStatut": "livre",
-    "milestones": [
-      {
-        "type": "MTG",
-        "date": "2026-04-28",
-        "duration": 2
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-04-30",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "y3ss27",
-    "name": "Y-3 SS27",
-    "owner": "felix",
-    "archived": true,
-    "refStatut": "livre",
-    "milestones": [
-      {
-        "type": "ESQ",
-        "date": "2026-04-22",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-05-12",
-        "duration": 1
-      },
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-05-06",
-        "duration": 1
-      },
-      {
-        "type": "SV",
-        "date": "2026-05-22",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-06-25",
-        "duration": 2
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-06-27",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-06-03",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-01-16",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-04-10",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-05-18",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-01-21",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-01-22",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-01-23",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-06-26",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-01-24",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "takbetruss",
-    "name": "TAKBE TRUSS",
-    "owner": "lucien",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "PRG",
-        "date": "2026-06-28",
-        "duration": 3
-      },
-      {
-        "type": "OFF",
-        "date": "2026-07-01",
-        "duration": 14
-      },
-      {
-        "type": "OFF",
-        "date": "2026-08-07",
-        "duration": 20
-      },
-      {
-        "type": "PRG",
-        "date": "2026-10-28",
-        "duration": 8
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-11-05",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-01-15",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-03-10",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-06-29",
-        "duration": 2
-      }
-    ]
-  },
-  {
-    "id": "dekmantel",
-    "name": "Dekmantel",
-    "owner": "lucien",
-    "archived": true,
-    "milestones": [
-      {
-        "type": "PRT",
-        "date": "2026-05-19",
-        "duration": 1
-      },
-      {
-        "type": "DEV",
-        "date": "2026-05-22",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-07-28",
-        "duration": 3
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-07-31",
-        "duration": 3
-      },
-      {
-        "type": "INT",
-        "date": "2026-01-21",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-02-16",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-02-27",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-03-13",
-        "duration": 1
-      },
-      {
-        "type": "DEV",
-        "date": "2026-03-20",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-05-22",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "poissonvolant",
-    "name": "POISSON VOLANT",
-    "owner": "lucien",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "PRT",
-        "date": "2026-06-10",
-        "duration": 1
-      },
-      {
-        "type": "MTG",
-        "date": "2026-07-20",
-        "duration": 11
-      },
-      {
-        "type": "DEV",
-        "date": "2026-06-26",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-15",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "hermes",
-    "name": "Hermès",
-    "owner": "pierre",
-    "archived": true,
-    "milestones": [
-      {
-        "type": "PRG",
-        "date": "2026-05-26",
-        "duration": 6
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-06-01",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-03-27",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-04-03",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-05-27",
-        "duration": 5
-      }
-    ]
-  },
-  {
-    "id": "magazine",
-    "name": "MAGAZINE LIVE OPEN-AIR",
-    "owner": "pierre",
-    "archived": true,
-    "refStatut": "livre",
-    "milestones": [
-      {
-        "type": "PRG",
-        "date": "2026-08-12",
-        "duration": 2
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-08-14",
-        "duration": 3
-      },
-      {
-        "type": "OFF",
-        "date": "2026-08-17",
-        "duration": 14
-      }
-    ]
-  },
-  {
-    "id": "baselsc",
-    "name": "BASEL SOCIAL CLUB - BASEL 2026",
-    "owner": "pierre",
-    "archived": true,
-    "refStatut": "interne",
-    "milestones": [
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-04-22",
-        "duration": 3
-      },
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-04-27",
-        "duration": 5
-      },
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-05-04",
-        "duration": 3
-      },
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-05-11",
-        "duration": 3
-      },
-      {
-        "type": "PRG",
-        "date": "2026-05-18",
-        "duration": 3
-      },
-      {
-        "type": "PRG",
-        "date": "2026-06-08",
-        "duration": 3
-      },
-      {
-        "type": "MTG",
-        "date": "2026-06-11",
-        "duration": 2
-      },
-      {
-        "type": "PRG",
-        "date": "2026-06-13",
-        "duration": 2
-      },
-      {
-        "type": "MTG",
-        "date": "2026-06-21",
-        "duration": 2
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-06-15",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-04-21",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-06-02",
-        "duration": 3
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-06-14",
-        "duration": 7
-      }
-    ]
-  },
-  {
-    "id": "balenciagashanghai3788",
-    "name": "Balenciaga Shanghai",
-    "owner": "felix",
-    "archived": true,
-    "milestones": [
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-05-04",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-05-05",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "polrotunda6080",
-    "name": "POL - BOURSE ROTUNDA 2027",
-    "owner": "felix",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-04-23",
-        "duration": 2
-      },
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-04-27",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-04-29",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-06-18",
-        "duration": 1
-      },
-      {
-        "type": "OFF",
-        "date": "2026-07-11",
-        "duration": 10
-      },
-      {
-        "type": "PRG",
-        "date": "2026-09-26",
-        "duration": 3
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-09-29",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-06-19",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "matiresfcalesss27302",
-    "name": "MATIÈRES FÉCALES SS27",
-    "owner": "pierre",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "INT",
-        "date": "2026-04-22",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-06-09",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-06-17",
-        "duration": 1
-      },
-      {
-        "type": "INT",
-        "date": "2026-01-09",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-01-23",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-02-03",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-02-23",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-06-04",
-        "duration": 2
-      },
-      {
-        "type": "PRG",
-        "date": "2026-03-02",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-03-03",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "fchains8061",
-    "name": "FONDATION CARTIER - HAINS",
-    "owner": "pierre",
-    "archived": true,
-    "refStatut": "annule",
-    "milestones": [
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-04-27",
-        "duration": 5
-      },
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-05-04",
-        "duration": 3
-      },
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-05-11",
-        "duration": 3
-      }
-    ]
-  },
-  {
-    "id": "fcnuitblanche3368",
-    "name": "FONDATION CARTIER - NUIT BLANCHE",
-    "owner": "pierre",
-    "archived": true,
-    "refStatut": "annule",
-    "milestones": [
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-04-22",
-        "duration": 3
-      },
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-04-27",
-        "duration": 5
-      },
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-05-04",
-        "duration": 3
-      },
-      {
-        "type": "FOLLOWUP",
-        "date": "2026-05-11",
-        "duration": 3
-      },
-      {
-        "type": "DEV",
-        "date": "2026-05-22",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-06-02",
-        "duration": 4
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-06-06",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "erwanbienalelyon3597",
-    "name": "Erwan Bienale Lyon",
-    "owner": "pierre",
-    "archived": false,
-    "milestones": [
-      {
-        "type": "DDAY",
-        "date": "2026-09-17",
-        "duration": 2
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-03-20",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "theomercier2438",
-    "name": "THEO MERCIER - BRANCUSI",
-    "owner": "pierre",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "ESQ",
-        "date": "2026-06-12",
-        "duration": 1
-      },
-      {
-        "type": "OFF",
-        "date": "2026-08-17",
-        "duration": 14
-      },
-      {
-        "type": "PRT",
-        "date": "2026-05-22",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-06-16",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "mm6ss271115",
-    "name": "MM6 SS27",
-    "owner": "felix",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "ESQ",
-        "date": "2026-06-04",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-09-21",
-        "duration": 2
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-09-23",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-05-20",
-        "duration": 1
-      },
-      {
-        "type": "INT",
-        "date": "2026-05-28",
-        "duration": 1
-      },
-      {
-        "type": "PRT",
-        "date": "2026-06-11",
-        "duration": 1
-      },
-      {
-        "type": "INT",
-        "date": "2026-06-17",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-02-24",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-02-25",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "tomford2696",
-    "name": "Tom Ford",
-    "owner": "felix",
-    "archived": false,
-    "milestones": [
-      {
-        "type": "PRG",
-        "date": "2026-09-27",
-        "duration": 3
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-09-30",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-06-26",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-02",
-        "duration": 1
-      },
-      {
-        "type": "INT",
-        "date": "2026-06-19",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-03",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-10",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "skrillex5969",
-    "name": "SKRILLEX - KRAFTWERK",
-    "owner": "felix",
-    "archived": true,
-    "refStatut": "livre",
-    "milestones": [
-      {
-        "type": "DEV",
-        "date": "2026-05-18",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-04-29",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-05-26",
-        "duration": 4
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-05-30",
-        "duration": 2
-      }
-    ]
-  },
-  {
-    "id": "pucciwinterinstallation6095",
-    "name": "Pucci Winter Installation",
-    "owner": "pierre",
-    "archived": false,
-    "milestones": [
-      {
-        "type": "SV",
-        "date": "2026-06-05",
-        "duration": 1
-      },
-      {
-        "type": "OFF",
-        "date": "2026-08-17",
-        "duration": 14
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-01-22",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-02-02",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-02-16",
-        "duration": 1
-      },
-      {
-        "type": "INT",
-        "date": "2026-06-05",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-04-15",
-        "duration": 3
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-04-17",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "skrillexgasworks2589",
-    "name": "SKRILLEX GASWORKS",
-    "owner": "felix",
-    "archived": true,
-    "refStatut": "livre",
-    "milestones": [
-      {
-        "type": "ESQ",
-        "date": "2026-07-03",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-09",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-08-28",
-        "duration": 2
-      },
-      {
-        "type": "PRG",
-        "date": "2026-08-26",
-        "duration": 2
-      },
-      {
-        "type": "INT",
-        "date": "2026-06-23",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-10",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-24",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "skrillexnavypier8656",
-    "name": "SKRILLEX NAVY PIER",
-    "owner": "felix",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "ESQ",
-        "date": "2026-07-03",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-08-08",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-09-11",
-        "duration": 2
-      },
-      {
-        "type": "PRG",
-        "date": "2026-09-09",
-        "duration": 2
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-24",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "balenciagashanghai8012",
-    "name": "BALENCIAGA PROPHECIE",
-    "owner": "pierre",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "ESQ",
-        "date": "2026-07-01",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-06-23",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-05-05",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "apxartbasel20264562",
-    "name": "AP X ART BASEL 2026",
-    "owner": "felix",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "ESQ",
-        "date": "2026-08-07",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-08-12",
-        "duration": 1
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-10-22",
-        "duration": 5
-      },
-      {
-        "type": "INT",
-        "date": "2026-06-30",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-07",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-09",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-16",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-20",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "balenciagacitybag2044",
-    "name": "BALENCIAGA CITY BAG",
-    "owner": "pierre",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "INT",
-        "date": "2026-06-24",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "rabanne8978",
-    "name": "RABANNE",
-    "owner": "pierre",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "DDAY",
-        "date": "2026-09-30",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-09",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "ryojiikeda8131",
-    "name": "RYOJI IKEDA - BOURSE 2027",
-    "owner": "pierre",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "PRT",
-        "date": "2026-10-07",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-07-10",
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "badgyal1842",
-    "name": "BAD GYAL",
-    "owner": "pierre",
-    "archived": false,
-    "refStatut": "actif",
-    "milestones": [
-      {
-        "type": "ESQ",
-        "date": "2026-08-07",
-        "duration": 1
-      },
-      {
-        "type": "OFF",
-        "date": "2026-08-13",
-        "duration": 19
-      },
-      {
-        "type": "DEV",
-        "date": "2026-01-09",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-01-16",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-01-21",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-01-29",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-02-04",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-02-18",
-        "duration": 1
-      },
-      {
-        "type": "ESQ",
-        "date": "2026-02-27",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-01-30",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-01-31",
-        "duration": 1
-      },
-      {
-        "type": "PRG",
-        "date": "2026-03-08",
-        "duration": 3
-      },
-      {
-        "type": "DDAY",
-        "date": "2026-03-20",
-        "duration": 1
-      }
-    ]
-  }
+ {
+  "id": "polvilla",
+  "name": "Pol Villa",
+  "owner": "felix",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "MTG",
+    "date": "2026-05-14",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-05-15",
+    "duration": 1,
+    "client": false
+   }
+  ]
+ },
+ {
+  "id": "polboros",
+  "name": "POL - BOROS 2026",
+  "owner": "felix",
+  "type": "print",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "MTG",
+    "date": "2026-04-28",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-04-30",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "livre"
+ },
+ {
+  "id": "y3ss27",
+  "name": "Y-3 SS27",
+  "owner": "felix",
+  "type": "digital",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "ESQ",
+    "date": "2026-04-22",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-05-12",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-05-06",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "SV",
+    "date": "2026-05-22",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-06-25",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-06-27",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-06-03",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-01-16",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-04-10",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-05-18",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-01-21",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-01-22",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-01-23",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-06-26",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-01-24",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "livre"
+ },
+ {
+  "id": "takbetruss",
+  "name": "TAKBE TRUSS",
+  "owner": "lucien",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "PRG",
+    "date": "2026-06-28",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "OFF",
+    "date": "2026-07-01",
+    "duration": 14,
+    "client": false
+   },
+   {
+    "type": "OFF",
+    "date": "2026-08-07",
+    "duration": 20,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-10-28",
+    "duration": 8,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-11-05",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-01-15",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-03-10",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-06-29",
+    "duration": 2,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "dekmantel",
+  "name": "Dekmantel",
+  "owner": "lucien",
+  "type": "digital",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "PRT",
+    "date": "2026-05-19",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DEV",
+    "date": "2026-05-22",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-07-28",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-07-31",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "INT",
+    "date": "2026-01-21",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-02-16",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-02-27",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-03-13",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DEV",
+    "date": "2026-03-20",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-05-22",
+    "duration": 1,
+    "client": false
+   }
+  ]
+ },
+ {
+  "id": "poissonvolant",
+  "name": "POISSON VOLANT",
+  "owner": "lucien",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "PRT",
+    "date": "2026-06-10",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "MTG",
+    "date": "2026-07-20",
+    "duration": 11,
+    "client": false
+   },
+   {
+    "type": "DEV",
+    "date": "2026-06-26",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-15",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "hermes",
+  "name": "Hermès",
+  "owner": "pierre",
+  "type": "print",
+  "status": "on-track",
+  "priority": "haute",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "PRG",
+    "date": "2026-05-26",
+    "duration": 6,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-06-01",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-03-27",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-04-03",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-05-27",
+    "duration": 5,
+    "client": false
+   }
+  ]
+ },
+ {
+  "id": "magazine",
+  "name": "MAGAZINE LIVE OPEN-AIR",
+  "owner": "pierre",
+  "type": "print",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "PRG",
+    "date": "2026-08-12",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-08-14",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "OFF",
+    "date": "2026-08-17",
+    "duration": 14,
+    "client": false
+   }
+  ],
+  "refStatut": "livre"
+ },
+ {
+  "id": "baselsc",
+  "name": "BASEL SOCIAL CLUB - BASEL 2026",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-04-22",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-04-27",
+    "duration": 5,
+    "client": false
+   },
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-05-04",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-05-11",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-05-18",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-06-08",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "MTG",
+    "date": "2026-06-11",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-06-13",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "MTG",
+    "date": "2026-06-21",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-06-15",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-04-21",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-06-02",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-06-14",
+    "duration": 7,
+    "client": false
+   }
+  ],
+  "refStatut": "interne"
+ },
+ {
+  "id": "balenciagashanghai3788",
+  "name": "Balenciaga Shanghai",
+  "owner": "felix",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-05-04",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-05-05",
+    "duration": 1,
+    "client": false
+   }
+  ]
+ },
+ {
+  "id": "polrotunda6080",
+  "name": "POL - BOURSE ROTUNDA 2027",
+  "owner": "felix",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-04-23",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-04-27",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-04-29",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-06-18",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "OFF",
+    "date": "2026-07-11",
+    "duration": 10,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-09-26",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-09-29",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-06-19",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "matiresfcalesss27302",
+  "name": "MATIÈRES FÉCALES SS27",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "INT",
+    "date": "2026-04-22",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-06-09",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-06-17",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "INT",
+    "date": "2026-01-09",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-01-23",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-02-03",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-02-23",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-06-04",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-03-02",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-03-03",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "fchains8061",
+  "name": "FONDATION CARTIER - HAINS",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-04-27",
+    "duration": 5,
+    "client": false
+   },
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-05-04",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-05-11",
+    "duration": 3,
+    "client": false
+   }
+  ],
+  "refStatut": "annule"
+ },
+ {
+  "id": "fcnuitblanche3368",
+  "name": "FONDATION CARTIER - NUIT BLANCHE",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-04-22",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-04-27",
+    "duration": 5,
+    "client": false
+   },
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-05-04",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "FOLLOWUP",
+    "date": "2026-05-11",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "DEV",
+    "date": "2026-05-22",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-06-02",
+    "duration": 4,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-06-06",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "annule"
+ },
+ {
+  "id": "erwanbienalelyon3597",
+  "name": "Erwan Bienale Lyon",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "DDAY",
+    "date": "2026-09-17",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-03-20",
+    "duration": 1,
+    "client": false
+   }
+  ]
+ },
+ {
+  "id": "theomercier2438",
+  "name": "THEO MERCIER - BRANCUSI",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "ESQ",
+    "date": "2026-06-12",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "OFF",
+    "date": "2026-08-17",
+    "duration": 14,
+    "client": false
+   },
+   {
+    "type": "PRT",
+    "date": "2026-05-22",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-06-16",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "mm6ss271115",
+  "name": "MM6 SS27",
+  "owner": "felix",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "ESQ",
+    "date": "2026-06-04",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-09-21",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-09-23",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-05-20",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "INT",
+    "date": "2026-05-28",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRT",
+    "date": "2026-06-11",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "INT",
+    "date": "2026-06-17",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-02-24",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-02-25",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "tomford2696",
+  "name": "Tom Ford",
+  "owner": "felix",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "PRG",
+    "date": "2026-09-27",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-09-30",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-06-26",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-02",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "INT",
+    "date": "2026-06-19",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-03",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-10",
+    "duration": 1,
+    "client": false
+   }
+  ]
+ },
+ {
+  "id": "skrillex5969",
+  "name": "SKRILLEX - KRAFTWERK",
+  "owner": "felix",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "DEV",
+    "date": "2026-05-18",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-04-29",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-05-26",
+    "duration": 4,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-05-30",
+    "duration": 2,
+    "client": false
+   }
+  ],
+  "refStatut": "livre"
+ },
+ {
+  "id": "pucciwinterinstallation6095",
+  "name": "Pucci Winter Installation",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "SV",
+    "date": "2026-06-05",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "OFF",
+    "date": "2026-08-17",
+    "duration": 14,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-01-22",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-02-02",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-02-16",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "INT",
+    "date": "2026-06-05",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-04-15",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-04-17",
+    "duration": 1,
+    "client": false
+   }
+  ]
+ },
+ {
+  "id": "skrillexgasworks2589",
+  "name": "SKRILLEX GASWORKS",
+  "owner": "felix",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": true,
+  "milestones": [
+   {
+    "type": "ESQ",
+    "date": "2026-07-03",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-09",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-08-28",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-08-26",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "INT",
+    "date": "2026-06-23",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-10",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-24",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "livre"
+ },
+ {
+  "id": "skrillexnavypier8656",
+  "name": "SKRILLEX NAVY PIER",
+  "owner": "felix",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "ESQ",
+    "date": "2026-07-03",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-08-08",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-09-11",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-09-09",
+    "duration": 2,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-24",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "balenciagashanghai8012",
+  "name": "BALENCIAGA PROPHECIE",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "ESQ",
+    "date": "2026-07-01",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-06-23",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-05-05",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "apxartbasel20264562",
+  "name": "AP X ART BASEL 2026",
+  "owner": "felix",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "ESQ",
+    "date": "2026-08-07",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-08-12",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-10-22",
+    "duration": 5,
+    "client": false
+   },
+   {
+    "type": "INT",
+    "date": "2026-06-30",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-07",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-09",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-16",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-20",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "balenciagacitybag2044",
+  "name": "BALENCIAGA CITY BAG",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "INT",
+    "date": "2026-06-24",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "rabanne8978",
+  "name": "RABANNE",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "DDAY",
+    "date": "2026-09-30",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-09",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "ryojiikeda8131",
+  "name": "RYOJI IKEDA - BOURSE 2027",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "PRT",
+    "date": "2026-10-07",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-07-10",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ },
+ {
+  "id": "badgyal1842",
+  "name": "BAD GYAL",
+  "owner": "pierre",
+  "type": "identité",
+  "status": "on-track",
+  "priority": "normal",
+  "archived": false,
+  "milestones": [
+   {
+    "type": "ESQ",
+    "date": "2026-08-07",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "OFF",
+    "date": "2026-08-13",
+    "duration": 19,
+    "client": false
+   },
+   {
+    "type": "DEV",
+    "date": "2026-01-09",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-01-16",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-01-21",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-01-29",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-02-04",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-02-18",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "ESQ",
+    "date": "2026-02-27",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-01-30",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-01-31",
+    "duration": 1,
+    "client": false
+   },
+   {
+    "type": "PRG",
+    "date": "2026-03-08",
+    "duration": 3,
+    "client": false
+   },
+   {
+    "type": "DDAY",
+    "date": "2026-03-20",
+    "duration": 1,
+    "client": false
+   }
+  ],
+  "refStatut": "actif"
+ }
 ];
 
 let PEOPLE=[
-  {
-    "id": "aleksandra",
-    "name": "ALEKSANDRA",
-    "maxLoad": 3,
-    "assignments": [
-      {
-        "projectId": "mm6ss271115",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-06-25",
-            "duration": 4
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 19
-          }
-        ]
-      },
-      {
-        "projectId": "skrillexnavypier8656",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-06-25",
-            "duration": 4
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 19
-          }
-        ]
-      },
-      {
-        "projectId": "apxartbasel20264562",
-        "lead": false,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 19
-          }
-        ]
-      }
+ {
+  "id": "aleksandra",
+  "name": "ALEKSANDRA",
+  "maxLoad": 3,
+  "absences": [],
+  "assignments": [
+   {
+    "projectId": "mm6ss271115",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-06-25",
+      "duration": 4,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 19,
+      "client": false
+     }
     ]
-  },
-  {
-    "id": "margot",
-    "name": "MARGOT",
-    "maxLoad": 4,
-    "assignments": [
-      {
-        "projectId": "polrotunda6080",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-13",
-            "duration": 19
-          }
-        ]
-      },
-      {
-        "projectId": "matiresfcalesss27302",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-07-11",
-            "duration": 10
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-13",
-            "duration": 19
-          }
-        ]
-      },
-      {
-        "projectId": "apxartbasel20264562",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-13",
-            "duration": 19
-          }
-        ]
-      },
-      {
-        "projectId": "rabanne8978",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-13",
-            "duration": 19
-          }
-        ]
-      },
-      {
-        "projectId": "badgyal1842",
-        "lead": true,
-        "personalMilestones": []
-      }
+   },
+   {
+    "projectId": "skrillexnavypier8656",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-06-25",
+      "duration": 4,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 19,
+      "client": false
+     }
     ]
-  },
-  {
-    "id": "lucien",
-    "name": "LUCIEN",
-    "maxLoad": 3,
-    "assignments": [
-      {
-        "projectId": "takbetruss",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 1
-          }
-        ]
-      },
-      {
-        "projectId": "poissonvolant",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "FOLLOWUP",
-            "date": "2026-05-19",
-            "duration": 1
-          },
-          {
-            "type": "OFF",
-            "date": "2026-07-01",
-            "duration": 14
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-07",
-            "duration": 20
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 1
-          }
-        ]
-      },
-      {
-        "projectId": "skrillexnavypier8656",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-07-01",
-            "duration": 14
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-07",
-            "duration": 20
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 1
-          }
-        ]
-      },
-      {
-        "projectId": "ryojiikeda8131",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-07",
-            "duration": 20
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 1
-          }
-        ]
-      }
+   },
+   {
+    "projectId": "apxartbasel20264562",
+    "lead": false,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 19,
+      "client": false
+     }
     ]
-  },
-  {
-    "id": "priscille",
-    "name": "PRISCILLE",
-    "maxLoad": 3,
-    "assignments": [
-      {
-        "projectId": "theomercier2438",
-        "lead": true,
-        "personalMilestones": []
-      },
-      {
-        "projectId": "tomford2696",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-17",
-            "duration": 14
-          }
-        ]
-      },
-      {
-        "projectId": "pucciwinterinstallation6095",
-        "lead": true,
-        "personalMilestones": []
-      },
-      {
-        "projectId": "balenciagashanghai8012",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-17",
-            "duration": 14
-          }
-        ]
-      },
-      {
-        "projectId": "balenciagacitybag2044",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-17",
-            "duration": 14
-          }
-        ]
-      },
-      {
-        "projectId": "erwanbienalelyon3597",
-        "lead": true,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-17",
-            "duration": 14
-          }
-        ]
-      }
+   }
+  ]
+ },
+ {
+  "id": "margot",
+  "name": "MARGOT",
+  "maxLoad": 4,
+  "absences": [],
+  "assignments": [
+   {
+    "projectId": "polrotunda6080",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-13",
+      "duration": 19,
+      "client": false
+     }
     ]
-  },
-  {
-    "id": "orlando",
-    "name": "ORLANDO",
-    "maxLoad": 2,
-    "assignments": [
-      {
-        "projectId": "balenciagashanghai8012",
-        "lead": false,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 3
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-10",
-            "duration": 28
-          }
-        ]
-      },
-      {
-        "projectId": "mm6ss271115",
-        "lead": false,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 3
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-10",
-            "duration": 28
-          }
-        ]
-      }
+   },
+   {
+    "projectId": "matiresfcalesss27302",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-07-11",
+      "duration": 10,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-13",
+      "duration": 19,
+      "client": false
+     }
     ]
-  },
-  {
-    "id": "yoojin",
-    "name": "YOOJIN",
-    "maxLoad": 2,
-    "assignments": [
-      {
-        "projectId": "apxartbasel20264562",
-        "lead": false,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 1
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-17",
-            "duration": 15
-          }
-        ]
-      },
-      {
-        "projectId": "skrillexnavypier8656",
-        "lead": false,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 1
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-17",
-            "duration": 15
-          }
-        ]
-      }
+   },
+   {
+    "projectId": "apxartbasel20264562",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-13",
+      "duration": 19,
+      "client": false
+     }
     ]
-  },
-  {
-    "id": "nino",
-    "name": "NINO GIBERT",
-    "maxLoad": 3,
-    "assignments": [
-      {
-        "projectId": "balenciagashanghai8012",
-        "lead": false,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 1
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-13",
-            "duration": 9
-          }
-        ]
-      }
+   },
+   {
+    "projectId": "rabanne8978",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-13",
+      "duration": 19,
+      "client": false
+     }
     ]
-  },
-  {
-    "id": "anna",
-    "name": "ANNA SCOTTÉ",
-    "maxLoad": 3,
-    "assignments": [
-      {
-        "projectId": "balenciagacitybag2044",
-        "lead": false,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 3
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-17",
-            "duration": 5
-          }
-        ]
-      },
-      {
-        "projectId": "balenciagashanghai8012",
-        "lead": false,
-        "personalMilestones": [
-          {
-            "type": "OFF",
-            "date": "2026-08-03",
-            "duration": 3
-          },
-          {
-            "type": "OFF",
-            "date": "2026-08-17",
-            "duration": 5
-          }
-        ]
-      }
+   },
+   {
+    "projectId": "badgyal1842",
+    "lead": true,
+    "personalMilestones": []
+   }
+  ]
+ },
+ {
+  "id": "lucien",
+  "name": "LUCIEN",
+  "maxLoad": 3,
+  "absences": [],
+  "assignments": [
+   {
+    "projectId": "takbetruss",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 1,
+      "client": false
+     }
     ]
-  }
+   },
+   {
+    "projectId": "poissonvolant",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "FOLLOWUP",
+      "date": "2026-05-19",
+      "duration": 1,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-07-01",
+      "duration": 14,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-07",
+      "duration": 20,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 1,
+      "client": false
+     }
+    ]
+   },
+   {
+    "projectId": "skrillexnavypier8656",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-07-01",
+      "duration": 14,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-07",
+      "duration": 20,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 1,
+      "client": false
+     }
+    ]
+   },
+   {
+    "projectId": "ryojiikeda8131",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-07",
+      "duration": 20,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 1,
+      "client": false
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "priscille",
+  "name": "PRISCILLE",
+  "maxLoad": 3,
+  "absences": [],
+  "assignments": [
+   {
+    "projectId": "theomercier2438",
+    "lead": true,
+    "personalMilestones": []
+   },
+   {
+    "projectId": "tomford2696",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-17",
+      "duration": 14,
+      "client": false
+     }
+    ]
+   },
+   {
+    "projectId": "pucciwinterinstallation6095",
+    "lead": true,
+    "personalMilestones": []
+   },
+   {
+    "projectId": "balenciagashanghai8012",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-17",
+      "duration": 14,
+      "client": false
+     }
+    ]
+   },
+   {
+    "projectId": "balenciagacitybag2044",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-17",
+      "duration": 14,
+      "client": false
+     }
+    ]
+   },
+   {
+    "projectId": "erwanbienalelyon3597",
+    "lead": true,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-17",
+      "duration": 14,
+      "client": false
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "orlando",
+  "name": "ORLANDO",
+  "maxLoad": 2,
+  "absences": [],
+  "assignments": [
+   {
+    "projectId": "balenciagashanghai8012",
+    "lead": false,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 3,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-10",
+      "duration": 28,
+      "client": false
+     }
+    ]
+   },
+   {
+    "projectId": "mm6ss271115",
+    "lead": false,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 3,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-10",
+      "duration": 28,
+      "client": false
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "yoojin",
+  "name": "YOOJIN",
+  "maxLoad": 2,
+  "absences": [],
+  "assignments": [
+   {
+    "projectId": "apxartbasel20264562",
+    "lead": false,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 1,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-17",
+      "duration": 15,
+      "client": false
+     }
+    ]
+   },
+   {
+    "projectId": "skrillexnavypier8656",
+    "lead": false,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 1,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-17",
+      "duration": 15,
+      "client": false
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "nino",
+  "name": "NINO GIBERT",
+  "maxLoad": 3,
+  "absences": [],
+  "assignments": [
+   {
+    "projectId": "balenciagashanghai8012",
+    "lead": false,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 1,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-13",
+      "duration": 9,
+      "client": false
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "anna",
+  "name": "ANNA SCOTTÉ",
+  "maxLoad": 3,
+  "absences": [],
+  "assignments": [
+   {
+    "projectId": "balenciagacitybag2044",
+    "lead": false,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 3,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-17",
+      "duration": 5,
+      "client": false
+     }
+    ]
+   },
+   {
+    "projectId": "balenciagashanghai8012",
+    "lead": false,
+    "personalMilestones": [
+     {
+      "type": "OFF",
+      "date": "2026-08-03",
+      "duration": 3,
+      "client": false
+     },
+     {
+      "type": "OFF",
+      "date": "2026-08-17",
+      "duration": 5,
+      "client": false
+     }
+    ]
+   }
+  ]
+ }
 ];
 
 let EVENTS=[
-  {
-    "label": "MILAN PD/FW/PR",
-    "start": "2026-04-22",
-    "end": "2026-04-24"
-  },
-  {
-    "label": "BK/MA",
-    "start": "2026-04-22",
-    "end": "2026-04-24"
-  },
-  {
-    "label": "BERLIN FW/AO",
-    "start": "2026-04-28",
-    "end": "2026-04-30"
-  },
-  {
-    "label": "BERLIN FW/PD",
-    "start": "2026-05-01",
-    "end": "2026-05-04"
-  },
-  {
-    "label": "PD/FW",
-    "start": "2026-05-06",
-    "end": "2026-05-10"
-  },
-  {
-    "label": "OFF SITE",
-    "start": "2026-05-12",
-    "end": "2026-05-13"
-  },
-  {
-    "label": "ROME MA",
-    "start": "2026-05-14",
-    "end": "2026-05-15"
-  },
-  {
-    "label": "FW/PD/SW",
-    "start": "2026-05-22",
-    "end": "2026-05-26"
-  },
-  {
-    "label": "BERLIN FW/AO/LN",
-    "start": "2026-05-26",
-    "end": "2026-06-01"
-  },
-  {
-    "label": "SEOUL PD",
-    "start": "2026-05-26",
-    "end": "2026-06-03"
-  },
-  {
-    "label": "FW",
-    "start": "2026-06-04",
-    "end": "2026-06-09"
-  },
-  {
-    "label": "OFFICE CLOSE",
-    "start": "2026-08-17",
-    "end": "2026-08-21"
-  },
-  {
-    "label": "KAITO — dernier jour",
-    "start": "2026-08-14",
-    "end": "2026-08-14"
-  }
+ {
+  "label": "MILAN PD/FW/PR",
+  "start": "2026-04-22",
+  "end": "2026-04-24",
+  "color": "#2DC653"
+ },
+ {
+  "label": "BK/MA",
+  "start": "2026-04-22",
+  "end": "2026-04-24",
+  "color": "#4895EF"
+ },
+ {
+  "label": "BERLIN FW/AO",
+  "start": "2026-04-28",
+  "end": "2026-04-30",
+  "color": "#2DC653"
+ },
+ {
+  "label": "BERLIN FW/PD",
+  "start": "2026-05-01",
+  "end": "2026-05-04",
+  "color": "#2DC653"
+ },
+ {
+  "label": "PD/FW",
+  "start": "2026-05-06",
+  "end": "2026-05-10",
+  "color": "#4895EF"
+ },
+ {
+  "label": "OFF SITE",
+  "start": "2026-05-12",
+  "end": "2026-05-13",
+  "color": "#4895EF"
+ },
+ {
+  "label": "ROME MA",
+  "start": "2026-05-14",
+  "end": "2026-05-15",
+  "color": "#2DC653"
+ },
+ {
+  "label": "FW/PD/SW",
+  "start": "2026-05-22",
+  "end": "2026-05-26",
+  "color": "#4895EF"
+ },
+ {
+  "label": "BERLIN FW/AO/LN",
+  "start": "2026-05-26",
+  "end": "2026-06-01",
+  "color": "#2DC653"
+ },
+ {
+  "label": "SEOUL PD",
+  "start": "2026-05-26",
+  "end": "2026-06-03",
+  "color": "#2DC653"
+ },
+ {
+  "label": "FW",
+  "start": "2026-06-04",
+  "end": "2026-06-09",
+  "color": "#4895EF"
+ },
+ {
+  "label": "OFFICE CLOSE",
+  "start": "2026-08-17",
+  "end": "2026-08-21",
+  "color": "#E63946"
+ },
+ {
+  "label": "KAITO — dernier jour",
+  "start": "2026-08-14",
+  "end": "2026-08-14",
+  "color": "#E63946"
+ }
 ];
 
 let PIPELINE=[
-  {
-    "name": "Tokyo Jazz Club",
-    "owner": "pierre",
-    "startDate": "2026-07-30",
-    "people": []
-  }
+ {
+  "name": "Tokyo Jazz Club",
+  "owner": "pierre",
+  "startDate": "2026-07-30",
+  "people": []
+ }
 ];
 
 
