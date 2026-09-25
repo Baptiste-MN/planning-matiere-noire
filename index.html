@@ -182,6 +182,8 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;mi
 .cw-info{font-family:'DM Mono',monospace;font-size:8px;color:#999;display:flex;justify-content:space-between;}
 
 /* PIPELINE */
+.lead-tgl{cursor:pointer;transition:transform .1s;}
+.lead-tgl:hover{transform:scale(1.35);outline:1px solid rgba(0,0,0,.25);outline-offset:1px;}
 .pip-ref{border-style:dashed !important;}
 .pip-tag{font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:#9B59B6;
   border:1px solid #D7BDE2;border-radius:2px;padding:0 4px;vertical-align:2px;}
@@ -2611,7 +2613,9 @@ function renderPersonView(TOTAL,T_OFF){
       const proj=getProject(asgn.projectId);
       if(!proj||proj.archived)return;
       const oc=OWNERS[proj.owner]||'#888';
-      const sq=asgn.lead?`<div class="own-sq" style="background:${oc};"></div>`:`<div class="own-sq" style="background:transparent;border:1px solid ${oc};"></div>`;
+      const sq=`<div class="own-sq lead-tgl" onclick="event.stopPropagation();toggleLead(${pIdx},${aIdx})"
+        title="${asgn.lead?'Design lead — cliquer pour retirer':'Cliquer pour désigner comme design lead'}"
+        style="${asgn.lead?`background:${oc};`:`background:transparent;border:1px solid ${oc};`}"></div>`;
       const st=`<div class="st-dot" style="background:${stColor(proj.status)};"></div>`;
 
       addRow('proj-l',
@@ -2644,7 +2648,12 @@ function renderProjectView(TOTAL,T_OFF){
   visProjects.forEach(proj=>{
     const oc=OWNERS[proj.owner]||'#888';
     const pjIdx=PROJECTS.indexOf(proj);
-    const assignees=activePeople().filter(p=>p.assignments.some(a=>a.projectId===proj.id));
+    const assignees=activePeople().filter(p=>p.assignments.some(a=>a.projectId===proj.id))
+      .sort((a,b)=>{
+        const la=a.assignments.find(x=>x.projectId===proj.id)?.lead?1:0;
+        const lb=b.assignments.find(x=>x.projectId===proj.id)?.lead?1:0;
+        return lb-la;
+      });
 
     // Project group header
     addRow('proj-grp-hdr',
@@ -2672,7 +2681,10 @@ function renderProjectView(TOTAL,T_OFF){
       const asgn=person.assignments[aIdx];
 
       addRow('proj-l',
-        `<span style="font-size:10px;font-weight:700;letter-spacing:.06em;">${person.name}</span>
+        `<div class="own-sq lead-tgl" onclick="event.stopPropagation();toggleLead(${pIdx},${aIdx})"
+           title="${asgn.lead?'Design lead — cliquer pour retirer':'Cliquer pour désigner comme design lead'}"
+           style="${asgn.lead?`background:${oc};`:`background:transparent;border:1px solid ${oc};`}"></div>
+         <span style="font-size:10px;font-weight:700;letter-spacing:.06em;">${person.name}${asgn.lead?' <span style="font-weight:400;color:var(--dim);letter-spacing:0;">· lead</span>':''}</span>
          <button class="icon-btn danger proj-del" onclick="unassignProject(${pIdx},${aIdx})" title="Retirer">×</button>`,
         'proj-r',null,(r,h)=>{
         makeCells(r,person.id,true,pIdx,aIdx,h);
@@ -2919,6 +2931,28 @@ function selArch(v){document.getElementById('arch-no').classList.toggle('sel',!v
 // ═══════════════════════════════════════════════════════════════════
 // MODAL — ASSIGN PROJECT TO PERSON
 // ═══════════════════════════════════════════════════════════════════
+/* Un seul design lead par projet. La couleur de la case est celle du chef de projet
+   (Pierre, Félix, Lucien) ; case pleine = lead, case vide = participant. */
+function leadActuel(projId,sauf){
+  for(const p of PEOPLE){
+    if(p===sauf) continue;
+    const a=p.assignments.find(x=>x.projectId===projId&&x.lead);
+    if(a) return p;
+  }
+  return null;
+}
+function toggleLead(pIdx,aIdx){
+  const person=PEOPLE[pIdx], asgn=person.assignments[aIdx];
+  if(!asgn) return;
+  const proj=getProject(asgn.projectId);
+  if(asgn.lead){ asgn.lead=false; saveData(); render(); return; }
+  const autre=leadActuel(asgn.projectId,person);
+  if(autre&&!confirm(`${autre.name} est déjà design lead sur « ${proj?proj.name:asgn.projectId} ».\n\nLe remplacer par ${person.name} ?`)) return;
+  PEOPLE.forEach(p=>p.assignments.forEach(a=>{ if(a.projectId===asgn.projectId) a.lead=false; }));
+  asgn.lead=true;
+  saveData(); render();
+}
+
 function openAssignModal(pIdx){
   const person=PEOPLE[pIdx];
   const assignedIds=person.assignments.map(a=>a.projectId);
@@ -2935,8 +2969,12 @@ function openAssignModal(pIdx){
       </div>
       <div class="field"><label>Design lead ?</label>
         <div class="radio-row">
-          <div class="radio-opt sel" id="lead-yes" onclick="selLead(true)">Oui</div>
-          <div class="radio-opt" id="lead-no" onclick="selLead(false)">Non</div>
+          <div class="radio-opt" id="lead-yes" onclick="selLead(true)">Oui</div>
+          <div class="radio-opt sel" id="lead-no" onclick="selLead(false)">Non</div>
+        </div>
+        <p style="font-size:10px;color:var(--dim);margin:6px 0 0;line-height:1.5;">Un seul design lead par projet.
+          Tu peux le changer ensuite en cliquant sur la case de couleur devant le projet.</p>
+        <div>
         </div>
       </div>`;
   }
@@ -3051,8 +3089,18 @@ function saveModal(){
   }
   else if(mode==='assign'){
     const projId=document.getElementById('assign-proj')?.value;if(!projId)return;
-    const lead=document.getElementById('lead-yes')?.classList.contains('sel')??true;
-    PEOPLE[modalCtx.pIdx].assignments.push({projectId:projId,lead,personalMilestones:[]});
+    let lead=document.getElementById('lead-yes')?.classList.contains('sel')??false;
+    const person=PEOPLE[modalCtx.pIdx];
+    if(lead){
+      const autre=leadActuel(projId,person);
+      if(autre){
+        const pr=getProject(projId);
+        if(confirm(`${autre.name} est déjà design lead sur « ${pr?pr.name:projId} ».\n\nLe remplacer par ${person.name} ?`))
+          PEOPLE.forEach(p=>p.assignments.forEach(a=>{ if(a.projectId===projId) a.lead=false; }));
+        else lead=false;
+      }
+    }
+    person.assignments.push({projectId:projId,lead,personalMilestones:[]});
   }
   else if(mode==='addPerson'){
     const name=document.getElementById('person-name').value.trim().toUpperCase();if(!name){alert('Entre un prénom.');return;}
@@ -3343,7 +3391,17 @@ function diagnostic(){
     if(vis>(p.maxLoad||0)) L.push(`${p.name} : ${vis} projets pour un plafond de ${p.maxLoad}`);
   });
   EVENTS.forEach(e=>{ if(e.end&&e.start&&e.end<e.start) L.push(`Événement « ${e.label} » : dates inversées`); });
-  const assignes={}; PEOPLE.forEach(p=>(p.assignments||[]).forEach(a=>assignes[a.projectId]=1));
+  const assignes={}, leads={};
+  PEOPLE.forEach(p=>(p.assignments||[]).forEach(a=>{
+    assignes[a.projectId]=1;
+    if(a.lead) (leads[a.projectId]=leads[a.projectId]||[]).push(p.name);
+  }));
+  PROJECTS.forEach(p=>{
+    if(p.archived||!assignes[p.id]) return;
+    const l=leads[p.id]||[];
+    if(!l.length) L.push(`« ${p.name} » n'a pas de design lead`);
+    else if(l.length>1) L.push(`« ${p.name} » a ${l.length} design leads : ${l.join(', ')}`);
+  });
   PROJECTS.forEach(p=>{ if(!p.archived&&!assignes[p.id]) L.push(`« ${p.name} » est visible mais n'a personne`); });
   alert(L.length
     ? `${L.length} point${L.length>1?'s':''} à regarder :\n\n`+L.slice(0,40).join('\n')
