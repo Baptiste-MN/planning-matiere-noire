@@ -3714,8 +3714,7 @@ function normProjet(p){
   return {id:p.id||('p'+Math.random().toString(36).slice(2,8)), name:p.name||'Sans nom',
           owner:p.owner||'', type:p.type||'identité', status:p.status||'on-track',
           priority:p.priority||'normal', archived:!!p.archived,
-          milestones:Array.isArray(p.milestones)?p.milestones.map(normJalon):[],
-          refStatut:p.refStatut};
+          milestones:Array.isArray(p.milestones)?p.milestones.map(normJalon):[]};
 }
 function normPersonne(p){
   return {id:p.id||('u'+Math.random().toString(36).slice(2,8)), name:p.name||'Sans nom',
@@ -3744,11 +3743,15 @@ window.FB_SAVE=async function(){
   if(!planCharge) return;
   planMuet=true;
   try{
-    await set(PLAN,{
-      projects:PROJECTS, people:PEOPLE, events:EVENTS,
+    // refStatut est recalculé à chaque chargement depuis le référentiel : on ne le stocke pas
+    const projets=PROJECTS.map(({refStatut,...p})=>p);
+    const charge={
+      projects:projets, people:PEOPLE, events:EVENTS,
       pipeline:PIPELINE.filter(p=>!p.fromRef),
       friOff:Array.from(FRI_OFF), majLe:Date.now()
-    });
+    };
+    // Firebase refuse toute valeur undefined : l'aller-retour JSON les retire proprement
+    await set(PLAN, JSON.parse(JSON.stringify(charge)));
     planMaj=Date.now();
     planEtat('enregistré · '+new Date().toLocaleTimeString('fr-FR'),'#2DC653');
   }catch(e){
