@@ -2581,8 +2581,12 @@ function renderPersonView(TOTAL,T_OFF){
 
   vis.forEach(person=>{
     const pIdx=PEOPLE.indexOf(person);
-    const n=person.assignments.length;
-    const lc=n>=person.maxLoad?'#E63946':n>=person.maxLoad*.75?'#F9C22E':'#2DC653';
+    // on ne compte que les projets réellement visibles : un projet livré ou archivé ne pèse plus
+    const n=person.assignments.filter(a=>{
+      const pr=PROJECTS.find(x=>x.id===a.projectId);
+      return pr&&!pr.archived;
+    }).length;
+    const lc=n>person.maxLoad?'#E63946':n===person.maxLoad?'#F9C22E':'#2DC653';
 
     addRow('person-l',
       `<span>${person.name}</span>
@@ -3251,8 +3255,9 @@ function renderCharge(){
     const getCharge=(person)=>{
       let days=0;
       person.assignments.forEach(asgn=>{
-        const proj=getProject(asgn.projectId);if(!proj)return;
+        const proj=getProject(asgn.projectId);if(!proj||proj.archived)return;   // projet livré : ne pèse plus
         [...proj.milestones,...asgn.personalMilestones].forEach(ms=>{
+          if(ms.type==='OFF')return;                                           // une absence n'est pas une charge
           const msStart=new Date(ms.date+'T00:00');
           const dur=ms.duration||1;
           const msEnd=new Date(msStart);msEnd.setDate(msEnd.getDate()+dur-1);
