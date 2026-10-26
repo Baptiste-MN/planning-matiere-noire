@@ -2720,7 +2720,7 @@ function toggleCmp(){
   if(cmpMode){
     ca.style.display='flex';ca.innerHTML='<span class="t-lbl">Sélectionner —</span>';
     viewMode='person';filterPersonId='all';filterProjectId='all';
-    PEOPLE.forEach(p=>{
+    activePeople().forEach(p=>{
       const c=document.createElement('div');c.className='cmp-check';c.textContent=p.name;
       c.onclick=()=>{if(cmpIds.has(p.id)){cmpIds.delete(p.id);c.classList.remove('on');}else{cmpIds.add(p.id);c.classList.add('on');}render();};
       ca.appendChild(c);
@@ -2986,6 +2986,11 @@ function selLead(v){document.getElementById('lead-yes').classList.toggle('sel',v
 // MODAL — PERSONS
 // ═══════════════════════════════════════════════════════════════════
 function openAddPersonModal(){
+  // Les personnes viennent du référentiel : une ligne ajoutée ici sans fiche référentiel serait masquée.
+  alert('Les personnes sont gérées dans l\'admin référentiel.\n\n'
+      + 'Toute personne active (non archivée, contrat en cours) y apparaît automatiquement dans le planning, '
+      + 'et disparaît dès qu\'elle est archivée ou que sa date de fin de contrat est passée.');
+  return;
   modalCtx={mode:'addPerson'};
   document.getElementById('modal-title').innerHTML='Ajouter une personne';
   document.getElementById('modal-delete').style.display='none';
@@ -3022,7 +3027,7 @@ function openEditEventModal(evIdx){const ev=EVENTS[evIdx];modalCtx={mode:'editEv
 // MODAL — PIPELINE
 // ═══════════════════════════════════════════════════════════════════
 function buildPipForm(name,owner,startDate,people){
-  const checks=PEOPLE.map(p=>`<label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;color:var(--dim);"><input type="checkbox" id="pp-${p.id}" ${people.includes(p.id)?'checked':''} style="width:auto;">${p.name}</label>`).join('');
+  const checks=PEOPLE.filter(p=>!window.HIDDEN_PEOPLE.has(p.id)||people.includes(p.id)).map(p=>`<label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;color:var(--dim);"><input type="checkbox" id="pp-${p.id}" ${people.includes(p.id)?'checked':''} style="width:auto;">${p.name}</label>`).join('');
   document.getElementById('modal-body').innerHTML=`
     <div class="field"><label>Nom du projet</label><input type="text" id="pip-name" value="${escHtml(name)}"></div>
     <div class="field"><label>Chef de projet</label>
@@ -3567,6 +3572,35 @@ function norm(s){
 }
 const firstWord=s=>norm(s).split(' ')[0];
 
+// ─── Contrats : une personne est affichée si elle n'est pas archivée
+//     ET qu'elle a une période en cours aujourd'hui (début ≤ aujourd'hui, et pas de fin ou fin ≥ aujourd'hui).
+//     Une arrivée prévue n'apparaît qu'à partir de son premier jour de contrat.
+//     Sans aucune période saisie : affichée par défaut.
+function aujourdhui(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function lirePeriodes(raw){
+  if(!raw) return [];
+  const l=Array.isArray(raw)?raw:Object.values(raw);
+  return l.filter(x=>x&&typeof x==='object').map(x=>({
+    debut:String(x.debut||x.start||''), fin:String(x.fin||x.end||''), contrat:String(x.contrat||'')
+  }));
+}
+function enContrat(periodes){
+  if(!periodes.length) return true;
+  const auj=aujourdhui();
+  return periodes.some(p=>(!p.debut || p.debut<=auj) && (!p.fin || p.fin>=auj));
+}
+function idPlanning(r){
+  // même convention que les lignes existantes : prénom en minuscules, sans accent
+  let base=firstWord(r.name).toLowerCase().replace(/[^a-z0-9]/g,'') || norm(r.initials).toLowerCase().replace(/[^a-z0-9]/g,'');
+  let id=base, n=2;
+  if(PEOPLE.some(p=>p.id===id)) id=base+norm(r.initials).toLowerCase().replace(/[^a-z0-9]/g,'');
+  while(PEOPLE.some(p=>p.id===id)) id=base+(n++);
+  return id;
+}
+
 // ─── Lecture souple du référentiel ───
 function readRef(raw){
   const out=[];
@@ -3580,7 +3614,9 @@ function readRef(raw){
     const archived = !!(v.archive||v.archived||v.archivee||v.inactif);
     const cat = v.categorie||v.category||v.cat||'';
     const initials = v.initiales||v.initials||v.id||key;
-    out.push({key,name:String(name),archived,cat,initials:String(initials)});
+    const periodes = lirePeriodes(v.periodes);
+    out.push({key,name:String(name),archived,cat,initials:String(initials),
+              periodes, enContrat:enContrat(periodes)});
   }
   return out;
 }
@@ -3617,44 +3653,72 @@ function horsPlanning(r){
   return HORS_PLANNING.has(f)||HORS_PLANNING.has(norm(r.name))||HORS_PLANNING.has(norm(r.initials));
 }
 
+let autoAjoutes=[];       // lignes créées automatiquement depuis le référentiel
+let planningOrphelins=[]; // lignes du planning sans personne dans le référentiel
+
+function visibleRef(r){
+  return !r.archived && r.enContrat && !horsPlanning(r);
+}
+
 function resolveRef(){
-  REF_BY_PID={}; NAME_INDEX={}; refUnmatched=[];
+  REF_BY_PID={}; NAME_INDEX={}; refUnmatched=[]; planningOrphelins=[];
   const taken=new Set();
+  const aCreer=[];
 
   for(const r of REF_PEOPLE){
     let pid = ALIAS[r.name] || ALIAS[r.initials] || ALIAS[r.key] || null;
     if(!pid){
-      const n=norm(r.name), f=firstWord(r.name);
+      const n=norm(r.name), f=firstWord(r.name), ini=norm(r.initials);
       const hit=PEOPLE.find(p=>{
+        if(taken.has(p.id)) return false;
         const pn=norm(p.name), pid2=norm(p.id);
-        return pn===n||pn===f||pid2===f||pid2===n;
+        return pn===n||pn===f||pid2===f||pid2===n||(p.refId&&norm(p.refId)===ini);
       });
       if(hit) pid=hit.id;
     }
     if(pid&&PEOPLE.some(p=>p.id===pid)&&!taken.has(pid)){
       taken.add(pid);
       REF_BY_PID[pid]=r;
-      NAME_INDEX[norm(r.name)]=pid;
-      NAME_INDEX[firstWord(r.name)]=pid;
-      NAME_INDEX[norm(r.initials)]=pid;
-    } else if(!pid && !r.archived && !horsPlanning(r)){
-      refUnmatched.push(r);
+    } else if(visibleRef(r)){
+      aCreer.push(r);                     // active dans le référentiel, pas encore de ligne
     }
   }
 
-  // Le référentiel fait foi : noms + archivage
+  // Création automatique des lignes manquantes (le référentiel fait foi)
+  let cree=false;
+  for(const r of aCreer){
+    const id=idPlanning(r);
+    PEOPLE.push({id, name:r.name.toUpperCase(), refId:r.initials, maxLoad:3, absences:[], assignments:[]});
+    taken.add(id); REF_BY_PID[id]=r; cree=true;
+    if(!autoAjoutes.includes(r.name)) autoAjoutes.push(r.name);
+  }
+
+  // Index des noms
+  for(const [pid,r] of Object.entries(REF_BY_PID)){
+    NAME_INDEX[norm(r.name)]=pid;
+    NAME_INDEX[firstWord(r.name)]=pid;
+    NAME_INDEX[norm(r.initials)]=pid;
+  }
+
+  // Visibilité : seules les personnes actives du référentiel sont affichées
   window.HIDDEN_PEOPLE=new Set();
+  const refOk = refLoaded && REF_PEOPLE.length>0;   // référentiel injoignable : on n'efface rien
   for(const p of PEOPLE){
     const r=REF_BY_PID[p.id];
-    if(!r) continue;
+    if(!r){
+      if(refOk){ window.HIDDEN_PEOPLE.add(p.id); planningOrphelins.push(p); }
+      continue;
+    }
     p.name=r.name.toUpperCase();
-    if(r.archived||horsPlanning(r)) window.HIDDEN_PEOPLE.add(p.id);
+    if(!p.refId) p.refId=r.initials;
+    if(!visibleRef(r)) window.HIDDEN_PEOPLE.add(p.id);
   }
   // Index de repli sur les noms du planning
   for(const p of PEOPLE){
     if(!NAME_INDEX[norm(p.name)]) NAME_INDEX[norm(p.name)]=p.id;
     if(!NAME_INDEX[firstWord(p.name)]) NAME_INDEX[firstWord(p.name)]=p.id;
   }
+  return cree;
 }
 
 function resolveProjects(){
@@ -3729,7 +3793,8 @@ function buildConges(){
 }
 
 function refresh(){
-  resolveRef();
+  const cree=resolveRef();
+  if(cree && planCharge && window.FB_SAVE) window.FB_SAVE();
   resolveProjects();
   buildConges();
   if(typeof buildFilterBtns==='function') buildFilterBtns();
@@ -3743,7 +3808,7 @@ function paint(){
         b=document.getElementById('cg-orph');
   if(!d||!t) return;
   const nHidden=window.HIDDEN_PEOPLE.size;
-  const issues=congesOrphans.length+refUnmatched.length;
+  const issues=congesOrphans.length+planningOrphelins.length;
   const bits=[];
   if(refLoaded) bits.push(`${Object.keys(REF_BY_PID).length} personnes`);
   if(projMatched) bits.push(`${projMatched} projets suivis`);
@@ -3752,7 +3817,8 @@ function paint(){
   const masques=PROJECTS.filter(p=>p.archived&&p.refStatut).length;
   if(masques) bits.push(`${masques} livré${masques>1?'s':''} masqué${masques>1?'s':''}`);
   bits.push(`${congesKept} absence${congesKept>1?'s':''} validée${congesKept>1?'s':''}`);
-  if(nHidden) bits.push(`${nHidden} archivée${nHidden>1?'s':''} masquée${nHidden>1?'s':''}`);
+  if(autoAjoutes.length) bits.push(`${autoAjoutes.length} ajoutée${autoAjoutes.length>1?'s':''} depuis le référentiel`);
+  if(nHidden) bits.push(`${nHidden} masquée${nHidden>1?'s':''} (archivée ou fin de contrat)`);
   t.textContent='Synchronisé — '+bits.join(' · ');
   d.style.background=issues?'#F9C22E':'#2DC653';
   if(b) b.style.display=issues?'inline-block':'none';
@@ -3781,6 +3847,7 @@ function normProjet(p){
 }
 function normPersonne(p){
   return {id:p.id||('u'+Math.random().toString(36).slice(2,8)), name:p.name||'Sans nom',
+          ...(p.refId?{refId:String(p.refId)}:{}),
           maxLoad:Number(p.maxLoad)||3,
           absences:Array.isArray(p.absences)?p.absences:[],
           assignments:(Array.isArray(p.assignments)?p.assignments:[]).map(a=>({
@@ -3887,9 +3954,13 @@ window.showCongesOrphans=function(){
     msg+='Demandes de congés non rattachées :\n  '
        + congesOrphans.map(x=>`« ${x.name} » — ${x.count} demande(s)`).join('\n  ')+'\n\n';
   }
-  if(refUnmatched.length){
-    msg+='Personnes actives du référentiel absentes du planning :\n  '
-       + refUnmatched.map(r=>`${r.name} (${r.initials})`).join('\n  ')+'\n\n';
+  if(autoAjoutes.length){
+    msg+='Ajoutées automatiquement depuis le référentiel :\n  '
+       + autoAjoutes.join('\n  ')+'\n\n';
+  }
+  if(planningOrphelins.length){
+    msg+='Lignes du planning masquées car introuvables dans le référentiel :\n  '
+       + planningOrphelins.map(p=>`${p.name} (${p.id})`).join('\n  ')+'\n\n';
   }
   if(projAbsents.length){
     msg+='Projets actifs du référentiel non encore planifiés ('+projAbsents.length+') :\n  '
