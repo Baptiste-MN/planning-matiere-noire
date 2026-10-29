@@ -3549,6 +3549,71 @@ const app=initializeApp({
 });
 const db=getDatabase(app);
 
+/* ═══ MN-GATE v1 — connexion Google obligatoire, liste d'accès /acces ═══
+   Bloc identique dans tous les outils : à modifier partout à la fois.
+   Session conservée par Firebase (même domaine) : une connexion vaut pour tous les outils. */
+async function mnGate(){
+  const B='https://www.gstatic.com/firebasejs/10.12.0/';
+  const [F,A,D]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-database.js')]);
+  const app=F.getApp(), auth=A.getAuth(app), db=D.getDatabase(app);
+  const g=document.createElement('div'); g.id='mn-gate';
+  g.innerHTML=`<style>
+#mn-gate{position:fixed;inset:0;z-index:2147483000;background:#F7F7F5;color:#14161A;display:flex;align-items:center;justify-content:center;
+  font-family:"Helvetica Neue",Inter,system-ui,sans-serif;font-size:14px;line-height:1.5;padding:24px;box-sizing:border-box}
+#mn-gate .mg{max-width:380px;width:100%}
+#mn-gate .mg-t{font-size:15px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin:0 0 4px}
+#mn-gate .mg-s{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:11px;color:#8C9199;margin:0 0 22px}
+#mn-gate .mg-m{margin:0 0 16px;color:#5C6169}
+#mn-gate .mg-m b{color:#14161A;font-weight:600}
+#mn-gate .mg-m.err{color:#A63A2B}
+#mn-gate button{font:inherit;font-size:13px;border:1px solid #14161A;background:#14161A;color:#F7F7F5;border-radius:3px;padding:8px 16px;cursor:pointer;margin:0 8px 8px 0}
+#mn-gate button.sec{background:transparent;color:#14161A;border-color:#DDDEDA}
+#mn-gate button:hover{opacity:.85}
+</style><div class="mg"><div class="mg-t">Matiere Noire</div><div class="mg-s"></div><div class="mg-m"></div><div class="mg-a"></div></div>`;
+  document.body.appendChild(g);
+  g.querySelector('.mg-s').textContent=document.title||'';
+  const msg=(h,err)=>{const m=g.querySelector('.mg-m');m.innerHTML=h;m.className='mg-m'+(err?' err':'');};
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const btns=list=>{const a=g.querySelector('.mg-a');a.innerHTML='';
+    list.forEach(([t,f,sec])=>{const b=document.createElement('button');b.textContent=t;if(sec)b.className='sec';b.onclick=f;a.appendChild(b);});};
+  const login=async()=>{
+    try{const p=new A.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});await A.signInWithPopup(auth,p);}
+    catch(e){
+      if(e&&(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request'))return;
+      msg(location.protocol==='file:'
+        ?'Connexion impossible depuis un fichier local : ouvrez la page en ligne.'
+        :e&&e.code==='auth/popup-blocked'
+          ?'La fenêtre de connexion a été bloquée par le navigateur. Autorisez les pop-ups pour ce site, puis réessayez.<br>Pop-up blocked: allow pop-ups for this site and retry.'
+          :'Connexion impossible · Sign-in failed<br><small>'+esc(e&&(e.code||e.message))+'</small>',true);
+    }
+  };
+  const ecranConnexion=()=>{msg('Connectez-vous avec votre compte <b>@matiere-noire.paris</b>.<br>Sign in with your Matiere Noire Google account.');
+    btns([['Se connecter avec Google · Sign in',login]]);};
+  msg('Chargement…'); btns([]);
+  return new Promise(resolve=>{
+    let ok=false;
+    A.onAuthStateChanged(auth,async u=>{
+      if(ok){ if(!u) location.reload(); return; }      // déconnexion après ouverture : on revient à l'écran de connexion
+      if(!u){ecranConnexion();return;}
+      msg('Vérification de l’accès…'); btns([]);
+      const email=(u.email||'').toLowerCase();
+      let autorise=false, erreur=null;
+      try{
+        autorise=!!u.emailVerified && (await D.get(D.ref(db,'acces/'+email.replace(/\./g,',')))).exists();
+      }catch(e){
+        if(!/permission/i.test(e&&e.message||'')) erreur=e;  // permission refusée = compte non autorisé
+      }
+      if(autorise){ok=true;g.remove();resolve(u);return;}
+      if(erreur){msg('Impossible de vérifier l’accès (connexion internet ?) · Could not check access.<br><small>'+esc(erreur.message)+'</small>',true);
+        btns([['Réessayer · Retry',()=>location.reload()],['Changer de compte',login,true]]);return;}
+      msg('<b>'+esc(email)+'</b> n’a pas accès à la plateforme. Demandez l’accès à Baptiste.<br>This account has no access. Ask Baptiste.',true);
+      btns([['Changer de compte · Switch account',login],['Se déconnecter',()=>A.signOut(auth),true]]);
+    });
+  });
+}
+/* ═══ fin MN-GATE v1 ═══ */
+await mnGate();
+
 // ═══ Table de rattachement manuelle ═══
 // Ne sert que si l'appariement automatique par prénom échoue.
 // Format :  'nom ou id du référentiel' : 'id du planning'
